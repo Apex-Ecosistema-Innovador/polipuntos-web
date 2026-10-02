@@ -1,0 +1,78 @@
+@use '@/styles/mixins' as *;
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+
+  @include motion-safe {
+    transition: border-color var(--duration-fast) var(--ease-default);
+  }
+
+  @include focus-ring;
+
+  &:hover:not(:disabled) {
+    border-color: var(--border-default);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.selected {
+  border-color: var(--brand-green-light);
+  background: rgba(0, 132, 45, 0.18);
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.meta {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.action {
+  @include label-mono;
+  color: var(--brand-green-light);
+}
+
+.none {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}

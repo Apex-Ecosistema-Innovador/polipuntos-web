@@ -1,0 +1,46 @@
+:root {
+  --brand-green-pine: #00842d;
+  --brand-green-light: #96ff27;
+  --brand-yellow: #ede200;
+  --brand-charcoal: #3a3a3a;
+  --brand-purple: #8709d8;
+  --brand-purple-accessible: #c9a6ff;
+
+  --bg-base: #08090a;
+  --bg-surface: #101210;
+  --bg-elevated: #1b1c1b;
+  --bg-charcoal: #3a3a3a;
+  --bg-principal-fill: #00842d;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.16);
+  --border-principal: rgba(0, 132, 45, 0.5);
+
+  --text-primary: #f4f6f1;
+  --text-secondary: rgba(244, 246, 241, 0.65);
+  --text-muted: rgba(244, 246, 241, 0.42);
+  --text-accent: var(--brand-green-light);
+  --text-accent-alt: var(--brand-yellow);
+  --text-danger: #ff8a7a;
+
+  --ease-default: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  --container-content: 72rem;
+  --container-narrow: 30rem;
+}

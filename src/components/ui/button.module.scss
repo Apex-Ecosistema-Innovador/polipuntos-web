@@ -1,0 +1,85 @@
+@use '@/styles/mixins' as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0 var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  width: auto;
+
+  @include motion-safe {
+    transition:
+      background-color var(--duration-fast) var(--ease-default),
+      border-color var(--duration-fast) var(--ease-default),
+      transform var(--duration-fast) var(--ease-default);
+  }
+
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background: var(--brand-green-light);
+  color: var(--bg-base);
+
+  &:hover:not(:disabled) {
+    background: var(--brand-yellow);
+    color: var(--bg-base);
+  }
+}
+
+.secondary {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--text-primary);
+
+  &:hover:not(:disabled) {
+    border-color: var(--brand-green-light);
+    color: var(--text-primary);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover:not(:disabled) {
+    color: var(--text-primary);
+  }
+}
+
+.danger {
+  background: transparent;
+  border-color: rgba(255, 138, 122, 0.4);
+  color: var(--text-danger);
+
+  &:hover:not(:disabled) {
+    border-color: var(--text-danger);
+    color: var(--text-danger);
+  }
+}
+
+.fullMobile {
+  width: 100%;
+
+  @include from($breakpoint-md) {
+    width: auto;
+  }
+}

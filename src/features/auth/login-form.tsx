@@ -1,0 +1,59 @@
+'use client';
+
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { TextField } from '@/components/ui/text-field';
+import { errorMessage } from '@/lib/format';
+import { homeFor } from '@/lib/routes';
+import { useAuth } from './auth-context';
+import styles from './auth-form.module.scss';
+
+export function LoginForm() {
+  const { signIn } = useAuth();
+  const router = useRouter();
+  const [cedula, setCedula] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      const user = await signIn(cedula, password);
+      router.replace(homeFor(user.role));
+    } catch (caught) {
+      setError(errorMessage(caught));
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form className={styles.form} onSubmit={handleSubmit}>
+      {error && <Alert tone="error">{error}</Alert>}
+      <TextField
+        label="Cédula"
+        mono
+        inputMode="numeric"
+        autoComplete="username"
+        value={cedula}
+        onChange={(event) => setCedula(event.target.value)}
+        required
+      />
+      <TextField
+        label="Contraseña"
+        type="password"
+        autoComplete="current-password"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        required
+      />
+      <Button type="submit" loading={submitting} fullWidthOnMobile>
+        Ingresar
+      </Button>
+    </form>
+  );
+}

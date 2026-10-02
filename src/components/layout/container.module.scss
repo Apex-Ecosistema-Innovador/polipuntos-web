@@ -1,0 +1,16 @@
+@use '@/styles/mixins' as *;
+
+.container {
+  width: 100%;
+  max-width: var(--container-content);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+
+  @include from($breakpoint-md) {
+    padding: 0 var(--space-8);
+  }
+}
+
+.narrow {
+  max-width: var(--container-narrow);
+}

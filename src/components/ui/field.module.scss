@@ -1,0 +1,72 @@
+@use '@/styles/mixins' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.label {
+  @include label-mono;
+}
+
+.control {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+
+  @include motion-safe {
+    transition: border-color var(--duration-fast) var(--ease-default);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:hover {
+    border-color: var(--text-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-yellow);
+    outline-offset: 1px;
+    border-color: var(--brand-yellow);
+  }
+}
+
+.mono {
+  @include font-mono;
+  letter-spacing: 0.04em;
+}
+
+.select {
+  appearance: none;
+  padding-right: var(--space-8);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.invalid {
+  border-color: var(--text-danger);
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: var(--text-danger);
+}

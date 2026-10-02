@@ -1,0 +1,14 @@
+@use '@/styles/mixins' as *;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.status {
+  @include font-mono;
+  color: var(--text-secondary);
+}

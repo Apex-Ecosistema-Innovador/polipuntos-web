@@ -1,0 +1,16 @@
+@use '@/styles/mixins' as *;
+
+.card {
+  @include surface-card;
+  padding: var(--space-6);
+  min-width: 0;
+}
+
+.principal {
+  background: var(--bg-principal-fill);
+  border-color: var(--border-principal);
+}
+
+.interactive {
+  @include hover-lift;
+}

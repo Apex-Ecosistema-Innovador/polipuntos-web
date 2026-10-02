@@ -1,0 +1,35 @@
+@use '@/styles/mixins' as *;
+
+.badge {
+  @include font-mono;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.green {
+  border-color: var(--border-principal);
+  color: var(--brand-green-light);
+}
+
+.yellow {
+  border-color: rgba(237, 226, 0, 0.4);
+  color: var(--brand-yellow);
+}
+
+.purple {
+  border-color: rgba(135, 9, 216, 0.6);
+  color: var(--brand-purple-accessible);
+}
+
+.danger {
+  border-color: rgba(255, 138, 122, 0.4);
+  color: var(--text-danger);
+}

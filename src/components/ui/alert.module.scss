@@ -1,0 +1,25 @@
+.alert {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font-size: 0.9375rem;
+}
+
+.error {
+  border-color: rgba(255, 138, 122, 0.4);
+  border-left-color: var(--text-danger);
+  color: var(--text-danger);
+}
+
+.success {
+  border-color: var(--border-principal);
+  border-left-color: var(--brand-green-light);
+  color: var(--brand-green-light);
+}
+
+.info {
+  border-left-color: var(--brand-purple);
+  color: var(--text-secondary);
+}

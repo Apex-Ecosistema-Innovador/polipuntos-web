@@ -1,0 +1,30 @@
+@use '@/styles/mixins' as *;
+
+.wrapper {
+  display: flex;
+  justify-content: flex-start;
+  padding: var(--space-8) 0;
+}
+
+.bar {
+  width: 6rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand-green-light), var(--brand-yellow), var(--brand-purple));
+  transform-origin: left;
+
+  @include motion-safe {
+    animation: sweep 1.2s var(--ease-default) infinite;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    transform: scaleX(0.1);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}

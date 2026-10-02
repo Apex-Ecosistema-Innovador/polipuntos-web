@@ -1,0 +1,75 @@
+$breakpoint-sm: 40rem;
+$breakpoint-md: 48rem;
+$breakpoint-lg: 64rem;
+
+@mixin from($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+@mixin font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+@mixin label-mono {
+  @include font-mono;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+
+  @include from($breakpoint-md) {
+    font-size: 0.8125rem;
+  }
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--brand-yellow);
+    outline-offset: 2px;
+  }
+}
+
+@mixin surface-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+@mixin hover-lift {
+  @include motion-safe {
+    transition:
+      border-color var(--duration-fast) var(--ease-default),
+      transform var(--duration-fast) var(--ease-default);
+  }
+
+  &:hover {
+    border-color: var(--border-default);
+    transform: translateY(-2px);
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
