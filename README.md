@@ -49,3 +49,11 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 
 ## Assets de marca
 `public/brand/` contiene el símbolo y los logos usados en la interfaz; `public/icons/` y `src/app/icon.png`, `apple-icon.png`, `opengraph-image.png` se generaron a partir del símbolo.
+
+## Calidad antes de cada commit
+Husky ejecuta `.husky/pre-commit`: `lint` (sin advertencias) y `build` (que incluye el chequeo de tipos). Si falla alguno, el commit se cancela. Los tests se corren con `pnpm test`.
+
+## Pendientes
+- **CI/CD con GitHub Actions** (aún no): workflow que corra lint, build y tests en cada push y pull request, y despliegue a Vercel.
+- Pruebas en celulares reales (cámara, instalación de la PWA y modo avión).
+- Pruebas de interfaz automáticas (Playwright).
