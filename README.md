@@ -12,7 +12,7 @@ pnpm install
 pnpm dev
 ```
 
-`NEXT_PUBLIC_API_URL` apunta al API (por defecto `http://localhost:5000/api/v1`). `NEXT_PUBLIC_SITE_URL` es la URL pública de la web (metadatos y Open Graph).
+`NEXT_PUBLIC_API_URL` apunta al API (por defecto `http://localhost:4000/api/v1`). `NEXT_PUBLIC_SITE_URL` es la URL pública de la web (metadatos y Open Graph).
 
 ## Scripts
 `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `test`, `sync:vendor`. `dev` y `build` copian a `public/vendor/` el wasm del lector QR para que funcione sin internet.

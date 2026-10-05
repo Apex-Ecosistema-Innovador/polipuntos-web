@@ -39,7 +39,7 @@ describe('buildContentSecurityPolicy', () => {
     expect(policy).toContain('upgrade-insecure-requests');
     const development = buildContentSecurityPolicy({
       nonce: 'n',
-      apiOrigin: 'http://localhost:5000',
+      apiOrigin: 'http://localhost:4000',
       development: true,
     });
     expect(development).not.toContain('upgrade-insecure-requests');
