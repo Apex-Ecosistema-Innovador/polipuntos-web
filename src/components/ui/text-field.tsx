@@ -10,10 +10,10 @@ interface FieldShellProps {
   children: ReactNode;
 }
 
-function FieldShell({ label, hint, error, id, children }: FieldShellProps) {
+export function FieldShell({ label, hint, error, id, children }: FieldShellProps) {
   return (
     <div className={styles.field}>
-      <label htmlFor={id} className={styles.label}>
+      <label id={`${id}-label`} htmlFor={id} className={styles.label}>
         {label}
       </label>
       {children}

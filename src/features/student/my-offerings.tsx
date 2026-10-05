@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useQuery } from '@/hooks/use-query';
 import { errorMessage } from '@/lib/format';
 import { enrollmentService, offeringService } from '@/lib/services';
-import { OfferingPicker } from './offering-picker';
+import { OfferingAddSelect } from './offering-select';
 import styles from './my-offerings.module.scss';
 
 export function MyOfferings() {
@@ -78,12 +78,10 @@ export function MyOfferings() {
         <h2 id="catalog" className={styles.title}>
           Agregar asignatura
         </h2>
-        <OfferingPicker
+        <OfferingAddSelect
           offerings={(catalog.data ?? []).filter((offering) => !enrolledIds.includes(offering.id))}
-          selectedIds={[]}
-          disabledIds={busyId ? [busyId] : []}
-          onToggle={(id) => run(id, () => enrollmentService.enroll(id))}
-          actionLabel={() => 'Inscribirme'}
+          disabled={busyId !== null}
+          onAdd={(id) => run(id, () => enrollmentService.enroll(id))}
         />
       </section>
     </div>

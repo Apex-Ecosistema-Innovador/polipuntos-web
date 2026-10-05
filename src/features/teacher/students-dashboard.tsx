@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Initials } from '@/components/ui/initials';
 import { Pagination } from '@/components/ui/pagination';
+import { Combobox } from '@/components/ui/combobox';
 import { SelectField, TextField } from '@/components/ui/text-field';
 import { Spinner } from '@/components/ui/spinner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
@@ -90,14 +91,19 @@ export function StudentsDashboard() {
   return (
     <div className={styles.dashboard}>
       <div className={styles.filters}>
-        <SelectField
+        <Combobox
           label="Asignatura"
           value={offeringId}
-          onChange={(event) => onFilter(setOfferingId)(event.target.value)}
+          onChange={onFilter(setOfferingId)}
+          emptyLabel="Todas"
           placeholder="Todas"
+          searchPlaceholder="Código o nombre"
+          emptyMessage="No hay asignaturas que coincidan."
           options={(offerings.data ?? []).map((offering) => ({
             value: offering.id,
-            label: `${offering.courseCode} · ${offering.courseName} (${offering.term})`,
+            badge: offering.courseCode,
+            label: offering.courseName,
+            description: offering.term,
           }))}
         />
         <TextField

@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Initials } from '@/components/ui/initials';
-import { SelectField, TextField } from '@/components/ui/text-field';
+import { Combobox } from '@/components/ui/combobox';
+import { TextField } from '@/components/ui/text-field';
 import { quickPoints, maxPointsPerAward } from '@/content/polipoints';
 import { NetworkError } from '@/lib/api-client';
 import { errorMessage, formatCedula } from '@/lib/format';
@@ -87,7 +88,13 @@ export function AwardFlow() {
   const [duplicateWarning, setDuplicateWarning] = useState(false);
 
   const offeringOptions = useMemo(
-    () => (scan?.offerings ?? []).map((offering) => ({ value: offering.id, label: offeringLabel(offering) })),
+    () =>
+      (scan?.offerings ?? []).map((offering) => ({
+        value: offering.id,
+        badge: offering.courseCode,
+        label: offering.courseName,
+        description: offering.term,
+      })),
     [scan],
   );
 
@@ -180,6 +187,10 @@ export function AwardFlow() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!scan) return;
+    if (!offeringId) {
+      setError('Selecciona una asignatura');
+      return;
+    }
     const amount = Number(points);
     if (!Number.isInteger(amount) || amount < 1 || amount > maxPointsPerAward) {
       setError(`Ingresa una cantidad entre 1 y ${maxPointsPerAward}`);
@@ -290,16 +301,17 @@ export function AwardFlow() {
             </Alert>
           ) : (
             <form className={styles.form} onSubmit={handleSubmit}>
-              <SelectField
+              <Combobox
                 label="Asignatura"
                 value={offeringId}
-                onChange={(event) => {
-                  setOfferingId(event.target.value);
+                onChange={(value) => {
+                  setOfferingId(value);
                   setDuplicateWarning(false);
                 }}
                 options={offeringOptions}
                 placeholder="Selecciona una asignatura"
-                required
+                searchPlaceholder="Código o nombre"
+                emptyMessage="No hay asignaturas que coincidan."
               />
               <div className={styles.chips} role="group" aria-label="Cantidades rápidas">
                 {quickPoints.map((value) => (

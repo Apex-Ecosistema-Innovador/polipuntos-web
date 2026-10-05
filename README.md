@@ -30,6 +30,9 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - `src/proxy.ts` redirige según la cookie ligera `apex_session` (solo el rol, no es un secreto; la autorización real vive en el API). Rutas inexistentes muestran `not-found`.
 - Sin conexión no se puede cerrar sesión ni cambiar el QR.
 
+## Selector de asignaturas
+`src/components/ui/combobox.tsx` es una lista desplegable con búsqueda (código, nombre o profesor, sin importar tildes), navegación por teclado y ARIA de combobox. Muestra como máximo 50 filas y avisa cuántas más coinciden, para que siga siendo usable con catálogos largos. Se usa en el registro (selección múltiple con chips), en "Agregar asignatura", en el filtro del dashboard y al asignar polipuntos.
+
 ## Cuenta y recuperación de contraseña
 - El correo institucional (`src/content/account.ts`, dominio `elpoli.edu.co`) es obligatorio en los registros; se valida en el formulario y en el API.
 - `/recuperar-contrasena` pide el correo y siempre muestra el mismo mensaje. `/restablecer-contrasena` lee el token del fragmento de la URL, lo borra de la barra de direcciones y pide la nueva contraseña.

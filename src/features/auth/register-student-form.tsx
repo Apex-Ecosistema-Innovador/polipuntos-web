@@ -11,7 +11,7 @@ import { errorMessage } from '@/lib/format';
 import { homeFor } from '@/lib/routes';
 import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
 import { authService, offeringService } from '@/lib/services';
-import { OfferingPicker } from '../student/offering-picker';
+import { OfferingMultiSelect } from '../student/offering-select';
 import { useAuth } from './auth-context';
 import { fieldErrors } from './use-form-errors';
 import styles from './auth-form.module.scss';
@@ -28,11 +28,6 @@ export function RegisterStudentForm() {
 
   const update = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) =>
     setForm((current) => ({ ...current, [key]: event.target.value }));
-
-  const toggleOffering = (id: string) =>
-    setOfferingIds((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
-    );
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -105,11 +100,11 @@ export function RegisterStudentForm() {
       <h2 className="visually-hidden">Asignaturas</h2>
       {offerings.loading && <Spinner />}
       {offerings.data && (
-        <OfferingPicker
+        <OfferingMultiSelect
           offerings={offerings.data}
           selectedIds={offeringIds}
-          onToggle={toggleOffering}
-          actionLabel={(selected) => (selected ? 'Inscrito' : 'Inscribirme')}
+          onChange={setOfferingIds}
+          hint="Puedes cursar varias asignaturas, incluso con el mismo profesor."
         />
       )}
       <Button type="submit" loading={submitting} fullWidthOnMobile>
