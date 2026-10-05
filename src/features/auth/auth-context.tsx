@@ -1,51 +1,92 @@
 'use client';
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { refreshSession, tokenStore } from '@/lib/api-client';
+import { NetworkError, refreshSession, tokenStore } from '@/lib/api-client';
+import { offlineCache } from '@/lib/offline/cache';
+import { sessionCookie } from '@/lib/session-cookie';
 import { authService } from '@/lib/services';
 import { User } from '@/types/api';
+import { useConnectivity } from '../offline/connectivity-context';
 
 type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
 
 interface AuthContextValue {
   user: User | null;
   status: AuthStatus;
+  verified: boolean;
   signIn: (cedula: string, password: string) => Promise<User>;
   completeSession: (user: User, accessToken: string) => void;
   signOut: () => Promise<void>;
 }
 
+type Restored = { kind: 'verified'; user: User } | { kind: 'cached'; user: User } | { kind: 'anonymous' };
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+async function restore(): Promise<Restored> {
+  try {
+    if (!(await refreshSession())) return { kind: 'anonymous' };
+    return { kind: 'verified', user: (await authService.me()).payload.user };
+  } catch (error) {
+    if (!(error instanceof NetworkError)) return { kind: 'anonymous' };
+    const cached = await offlineCache.session.get();
+    return cached ? { kind: 'cached', user: cached.value } : { kind: 'anonymous' };
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { online } = useConnectivity();
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
+  const [verified, setVerified] = useState(false);
+
+  const establish = useCallback((nextUser: User) => {
+    setUser(nextUser);
+    setStatus('authenticated');
+    setVerified(true);
+    sessionCookie.set(nextUser.role);
+    void offlineCache.session.set(nextUser);
+  }, []);
+
+  const apply = useCallback(
+    (result: Restored) => {
+      if (result.kind === 'verified') {
+        establish(result.user);
+        return;
+      }
+      if (result.kind === 'cached') {
+        setUser(result.user);
+        setStatus('authenticated');
+        setVerified(false);
+        return;
+      }
+      sessionCookie.clear();
+      void offlineCache.session.clear();
+      setUser(null);
+      setStatus('anonymous');
+      setVerified(false);
+    },
+    [establish],
+  );
+
+  const needsRestore = status === 'loading' || (status === 'authenticated' && !verified && online);
 
   useEffect(() => {
+    if (!needsRestore) return;
     let active = true;
-
-    refreshSession()
-      .then(async (token) => {
-        if (!token) return null;
-        return (await authService.me()).payload.user;
-      })
-      .catch(() => null)
-      .then((current) => {
-        if (!active) return;
-        setUser(current);
-        setStatus(current ? 'authenticated' : 'anonymous');
-      });
-
+    void restore().then((result) => active && apply(result));
     return () => {
       active = false;
     };
-  }, []);
+  }, [needsRestore, apply]);
 
-  const completeSession = useCallback((nextUser: User, accessToken: string) => {
-    tokenStore.set(accessToken);
-    setUser(nextUser);
-    setStatus('authenticated');
-  }, []);
+  const completeSession = useCallback(
+    (nextUser: User, accessToken: string) => {
+      tokenStore.set(accessToken);
+      establish(nextUser);
+    },
+    [establish],
+  );
 
   const signIn = useCallback(
     async (cedula: string, password: string) => {
@@ -59,13 +100,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await authService.logout().catch(() => undefined);
     tokenStore.set(null);
+    sessionCookie.clear();
+    if (user) await offlineCache.clearUserData(user.id);
     setUser(null);
     setStatus('anonymous');
-  }, []);
+    setVerified(false);
+  }, [user]);
 
   const value = useMemo(
-    () => ({ user, status, signIn, completeSession, signOut }),
-    [user, status, signIn, completeSession, signOut],
+    () => ({ user, status, verified, signIn, completeSession, signOut }),
+    [user, status, verified, signIn, completeSession, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,4 +1,5 @@
 import { apiDownload, apiRequest } from './api-client';
+import type { Roster } from './offline/cache';
 import {
   DashboardRow,
   Invite,
@@ -40,6 +41,21 @@ export interface DashboardFilters {
   order?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+}
+
+export interface OfflineAwardPayload {
+  qrToken: string;
+  offeringId: string;
+  points: number;
+  reason?: string;
+  idempotencyKey: string;
+  occurredAt: string;
+}
+
+export interface BatchResult {
+  idempotencyKey: string;
+  status: 'created' | 'duplicate' | 'rejected';
+  error?: string;
 }
 
 export const authService = {
@@ -95,6 +111,10 @@ export const polipointService = {
     reason?: string;
     idempotencyKey: string;
   }) => apiRequest<{ id: string }>('/polipoints/awards', { method: 'POST', body }),
+  awardBatch: async (items: OfflineAwardPayload[]) =>
+    (await apiRequest<BatchResult[]>('/polipoints/awards/batch', { method: 'POST', body: { items } }))
+      .payload,
+  roster: async () => (await apiRequest<Roster>('/polipoints/roster')).payload,
   revoke: (id: string, reason?: string) =>
     apiRequest<void>(`/polipoints/awards/${id}/revoke`, { method: 'POST', body: { reason } }),
 };

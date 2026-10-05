@@ -2,7 +2,7 @@
 
 .wordmark {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-2);
   color: var(--text-primary);
 
@@ -21,4 +21,10 @@
 .product {
   @include label-mono;
   color: var(--brand-green-light);
+}
+
+.symbol {
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
 }

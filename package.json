@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "sync:vendor": "node scripts/sync-vendor.mjs",
+    "predev": "pnpm sync:vendor",
+    "prebuild": "pnpm sync:vendor",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -19,7 +22,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sass": "^1.105.1",
-    "zod": "^4.6.5"
+    "zod": "^4.6.5",
+    "zxing-wasm": "3.1.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
@@ -30,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.1.1",
     "prettier": "^3.9.9",
     "typescript": "^5",

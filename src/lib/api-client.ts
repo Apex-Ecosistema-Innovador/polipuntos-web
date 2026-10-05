@@ -25,6 +25,37 @@ export class ApiError extends Error {
   }
 }
 
+export class NetworkError extends ApiError {
+  constructor() {
+    super(0, 'Sin conexión a internet');
+  }
+}
+
+type NetworkListener = (reachable: boolean) => void;
+
+const networkListeners = new Set<NetworkListener>();
+
+export const networkEvents = {
+  subscribe: (listener: NetworkListener) => {
+    networkListeners.add(listener);
+    return () => {
+      networkListeners.delete(listener);
+    };
+  },
+  emit: (reachable: boolean) => networkListeners.forEach((listener) => listener(reachable)),
+};
+
+const guardedFetch = async (input: string, init: RequestInit) => {
+  try {
+    const response = await fetch(input, init);
+    networkEvents.emit(true);
+    return response;
+  } catch {
+    networkEvents.emit(false);
+    throw new NetworkError();
+  }
+};
+
 let accessToken: string | null = null;
 let refreshing: Promise<string | null> | null = null;
 
@@ -45,14 +76,13 @@ const buildUrl = (path: string, query?: RequestOptions['query']) => {
 
 async function refreshAccessToken(): Promise<string | null> {
   if (!refreshing) {
-    refreshing = fetch(buildUrl('/auth/refresh'), { method: 'POST', credentials: 'include' })
+    refreshing = guardedFetch(buildUrl('/auth/refresh'), { method: 'POST', credentials: 'include' })
       .then(async (response) => {
         if (!response.ok) return null;
         const data = (await response.json()) as Envelope<{ accessToken: string }>;
         accessToken = data.payload.accessToken;
         return accessToken;
       })
-      .catch(() => null)
       .finally(() => {
         refreshing = null;
       });
@@ -65,7 +95,7 @@ async function send(path: string, options: RequestOptions, token: string | null)
   if (options.body !== undefined) headers['Content-Type'] = 'application/json';
   if (token && options.authenticated !== false) headers.Authorization = `Bearer ${token}`;
 
-  return fetch(buildUrl(path, options.query), {
+  return guardedFetch(buildUrl(path, options.query), {
     method: options.method ?? 'GET',
     headers,
     credentials: 'include',
@@ -100,3 +130,5 @@ export async function apiDownload(path: string, query?: RequestOptions['query'])
 }
 
 export const refreshSession = refreshAccessToken;
+
+export const healthUrl = new URL('/health', API_URL).toString();

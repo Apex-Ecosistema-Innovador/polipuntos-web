@@ -6,7 +6,7 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
 import { errorMessage } from '@/lib/format';
-import { homeFor } from '@/lib/routes';
+import { safeNext } from '@/lib/routes';
 import { useAuth } from './auth-context';
 import styles from './auth-form.module.scss';
 
@@ -24,7 +24,7 @@ export function LoginForm() {
     setError(null);
     try {
       const user = await signIn(cedula, password);
-      router.replace(homeFor(user.role));
+      router.replace(safeNext(new URLSearchParams(window.location.search).get('next'), user.role));
     } catch (caught) {
       setError(errorMessage(caught));
       setSubmitting(false);

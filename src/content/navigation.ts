@@ -14,6 +14,7 @@ export const navigationByRole: Record<Role, NavItem[]> = {
   teacher: [
     { href: '/profesor', label: 'Estudiantes' },
     { href: '/profesor/escanear', label: 'Escanear' },
+    { href: '/profesor/pendientes', label: 'Pendientes' },
     { href: '/profesor/asignaturas', label: 'Asignaturas' },
   ],
   admin: [{ href: '/admin', label: 'Administración' }],

@@ -1,3 +1,4 @@
+import { RequiresConnection } from '@/components/feedback/requires-connection';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { RegisterStudentForm } from '@/features/auth/register-student-form';
@@ -13,7 +14,9 @@ export default function RegisterStudentPage() {
         </span>
       }
     >
-      <RegisterStudentForm />
+      <RequiresConnection feature="El registro">
+        <RegisterStudentForm />
+      </RequiresConnection>
     </AuthLayout>
   );
 }

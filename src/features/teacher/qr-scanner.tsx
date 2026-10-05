@@ -1,7 +1,12 @@
 'use client';
 
-import { Scanner } from '@yudiel/react-qr-scanner';
+import { Scanner, setZXingModuleOverrides } from '@yudiel/react-qr-scanner';
+import { scannerWasmUrl } from '@/lib/offline/warm-targets';
 import styles from './award-flow.module.scss';
+
+setZXingModuleOverrides({
+  locateFile: (path: string, prefix: string) => (path.endsWith('.wasm') ? scannerWasmUrl : prefix + path),
+});
 
 interface QrScannerProps {
   onToken: (token: string) => void;

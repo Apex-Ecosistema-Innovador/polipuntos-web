@@ -12,13 +12,22 @@ pnpm install
 pnpm dev
 ```
 
-`NEXT_PUBLIC_API_URL` apunta al API (por defecto `http://localhost:5000/api/v1`).
+`NEXT_PUBLIC_API_URL` apunta al API (por defecto `http://localhost:5000/api/v1`). `NEXT_PUBLIC_SITE_URL` es la URL pública de la web (metadatos y Open Graph).
 
 ## Scripts
-`dev`, `build`, `start`, `lint`, `typecheck`, `format`.
+`dev`, `build`, `start`, `lint`, `typecheck`, `format`, `test`, `sync:vendor`. `dev` y `build` copian a `public/vendor/` el wasm del lector QR para que funcione sin internet.
 
 ## Estructura
 `src/app` rutas · `src/components` (ui, layout, visuals) · `src/features` (auth, student, teacher, admin) · `src/content` textos tipados · `src/lib` cliente API y utilidades · `src/styles` tokens y mixins SCSS.
 
+## PWA y modo offline
+La app es instalable y el service worker (`public/sw.js`) solo se registra en producción (`pnpm build && pnpm start`). Requiere HTTPS (localhost cuenta como seguro).
+
+- **Estudiante**: el QR y el último total conocido se guardan en IndexedDB y se muestran sin conexión (el total aparece marcado como desactualizado).
+- **Profesor**: el dispositivo guarda un roster de sus estudiantes; sin conexión se escanea, se elige asignatura y se asignan puntos. Las asignaciones se encolan en IndexedDB (`src/lib/offline/award-queue.ts`) y se envían a `POST /polipoints/awards/batch` al recuperar la conexión. La firma del QR se valida en el servidor al sincronizar.
+- Dashboards, asignaturas, historial, registro e inicio de sesión requieren conexión y muestran una pantalla propia.
+- `src/proxy.ts` redirige según la cookie ligera `apex_session` (solo el rol, no es un secreto; la autorización real vive en el API). Rutas inexistentes muestran `not-found`.
+- Sin conexión no se puede cerrar sesión ni cambiar el QR.
+
 ## Assets de marca
-Colocar `logo.png`, `wordmark.png` y `logo-white.png` (fondo transparente) en `public/brand/`.
+`public/brand/` contiene el símbolo y los logos usados en la interfaz; `public/icons/` y `src/app/icon.png`, `apple-icon.png`, `opengraph-image.png` se generaron a partir del símbolo.

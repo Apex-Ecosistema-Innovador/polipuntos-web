@@ -6,6 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/auth-context';
 import { navigationByRole, roleLabels } from '@/content/navigation';
 import { cn } from '@/lib/cn';
+import { ConnectionBanner } from '../feedback/connection-banner';
+import { OfflineWarmup } from '@/features/offline/offline-warmup';
+import { useConnectivity } from '@/features/offline/connectivity-context';
 import { Button } from '../ui/button';
 import { Initials } from '../ui/initials';
 import { Badge } from '../ui/badge';
@@ -17,6 +20,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const { online } = useConnectivity();
 
   if (!user) return null;
 
@@ -29,6 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.shell}>
+      <OfflineWarmup />
       <header className={styles.header}>
         <Container className={styles.bar}>
           <Wordmark href={items[0].href} />
@@ -40,7 +45,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Badge tone="green">{roleLabels[user.role]}</Badge>
               </div>
             </div>
-            <Button variant="ghost" onClick={handleSignOut}>
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              disabled={!online}
+              title={online ? undefined : 'Necesitas conexión para cerrar sesión'}
+            >
               Salir
             </Button>
           </div>
@@ -62,6 +72,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </Container>
         </nav>
+        <ConnectionBanner />
       </header>
       <main className={styles.main}>
         <Container>{children}</Container>

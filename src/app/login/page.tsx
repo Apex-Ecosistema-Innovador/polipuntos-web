@@ -1,3 +1,4 @@
+import { RequiresConnection } from '@/components/feedback/requires-connection';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { LoginForm } from '@/features/auth/login-form';
@@ -18,7 +19,9 @@ export default function LoginPage() {
         </>
       }
     >
-      <LoginForm />
+      <RequiresConnection feature="Iniciar sesión">
+        <LoginForm />
+      </RequiresConnection>
     </AuthLayout>
   );
 }
