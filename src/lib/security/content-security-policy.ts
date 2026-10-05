@@ -12,12 +12,9 @@ export function buildContentSecurityPolicy({
   upgradeInsecure = false,
 }: PolicyOptions): string {
   const scriptSources = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"];
-  const styleSources = ["'self'", `'nonce-${nonce}'`];
+  const styleSources = development ? ["'self'", "'unsafe-inline'"] : ["'self'", `'nonce-${nonce}'`];
 
-  if (development) {
-    scriptSources.push("'unsafe-eval'");
-    styleSources.push("'unsafe-inline'");
-  }
+  if (development) scriptSources.push("'unsafe-eval'");
 
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],

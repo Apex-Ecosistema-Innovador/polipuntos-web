@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
@@ -86,6 +86,16 @@ export function AwardFlow() {
   const [submitting, setSubmitting] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [duplicateWarning, setDuplicateWarning] = useState(false);
+  const [insecureContext, setInsecureContext] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (window.isSecureContext) return;
+      setInsecureContext(true);
+      setMode('manual');
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const offeringOptions = useMemo(
     () =>
@@ -242,9 +252,20 @@ export function AwardFlow() {
       {done && <Alert tone="success">{done}</Alert>}
       {error && <Alert tone="error">{error}</Alert>}
 
+      {!scan && insecureContext && (
+        <Alert tone="info">
+          Esta página se abrió por una conexión no segura (http), así que el navegador bloquea la cámara.
+          Busca al estudiante manualmente o abre la app por HTTPS para escanear.
+        </Alert>
+      )}
+
       {!scan && (
         <div className={styles.modes} role="group" aria-label="Cómo identificar al estudiante">
-          <Button variant={mode === 'scan' ? 'primary' : 'secondary'} onClick={() => switchMode('scan')}>
+          <Button
+            variant={mode === 'scan' ? 'primary' : 'secondary'}
+            onClick={() => switchMode('scan')}
+            disabled={insecureContext}
+          >
             Escanear QR
           </Button>
           <Button variant={mode === 'manual' ? 'primary' : 'secondary'} onClick={() => switchMode('manual')}>

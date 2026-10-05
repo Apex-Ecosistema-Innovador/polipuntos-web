@@ -52,6 +52,8 @@ describe('buildContentSecurityPolicy', () => {
       development: true,
     });
     expect(directive(development, 'script-src')).toContain("'unsafe-eval'");
+    expect(directive(development, 'style-src')).toContain("'unsafe-inline'");
+    expect(directive(policy, 'style-src')).not.toContain("'unsafe-inline'");
     expect(directive(policy, 'script-src')).not.toContain("'unsafe-eval'");
   });
 });

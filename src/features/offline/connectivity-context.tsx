@@ -29,7 +29,7 @@ async function probe(): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
   try {
-    await fetch(healthUrl, { cache: 'no-store', signal: controller.signal });
+    await fetch(healthUrl(), { cache: 'no-store', signal: controller.signal });
     return true;
   } catch {
     return false;

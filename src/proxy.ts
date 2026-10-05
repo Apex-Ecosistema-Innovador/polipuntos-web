@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { API_ORIGIN } from '@/lib/env';
+import { apiOriginFor, isLocal } from '@/lib/env';
 import { homeFor } from '@/lib/routes';
 import { buildContentSecurityPolicy } from '@/lib/security/content-security-policy';
 import { parseSessionRole, SESSION_COOKIE } from '@/lib/session-cookie';
@@ -63,13 +63,22 @@ const resolveRedirect = (request: NextRequest, role: Role | null): NextResponse 
   return null;
 };
 
+const requestHostname = (request: NextRequest) => {
+  const host = request.headers.get('host');
+  try {
+    return host ? new URL(`http://${host}`).hostname : request.nextUrl.hostname;
+  } catch {
+    return request.nextUrl.hostname;
+  }
+};
+
 const withSecurityPolicy = (request: NextRequest) => {
   const nonce = btoa(crypto.randomUUID());
   const policy = buildContentSecurityPolicy({
     nonce,
-    apiOrigin: API_ORIGIN,
+    apiOrigin: apiOriginFor(requestHostname(request)),
     development: process.env.NODE_ENV !== 'production',
-    upgradeInsecure: process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') ?? false,
+    upgradeInsecure: !isLocal && (process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') ?? false),
   });
 
   const headers = new Headers(request.headers);

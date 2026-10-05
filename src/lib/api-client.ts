@@ -1,4 +1,4 @@
-import { API_URL } from './env';
+import { apiUrl } from './env';
 
 interface Envelope<T> {
   message?: string;
@@ -76,7 +76,7 @@ export const tokenStore = {
 };
 
 const buildUrl = (path: string, query?: RequestOptions['query']) => {
-  const url = new URL(`${API_URL}${path}`);
+  const url = new URL(`${apiUrl()}${path}`);
   Object.entries(query ?? {}).forEach(([key, value]) => {
     if (value !== undefined && value !== '') url.searchParams.set(key, String(value));
   });
@@ -143,4 +143,4 @@ export async function apiDownload(path: string, query?: RequestOptions['query'])
 
 export const refreshSession = refreshAccessToken;
 
-export const healthUrl = new URL('/health', API_URL).toString();
+export const healthUrl = () => new URL('/health', apiUrl()).toString();
