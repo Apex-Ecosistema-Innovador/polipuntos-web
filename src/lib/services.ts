@@ -20,7 +20,7 @@ export interface StudentRegistration {
   cedula: string;
   fullName: string;
   password: string;
-  email?: string;
+  email: string;
   offeringIds: string[];
 }
 
@@ -28,7 +28,7 @@ export interface TeacherRegistration {
   cedula: string;
   fullName: string;
   password: string;
-  email?: string;
+  email: string;
   inviteCode?: string;
 }
 
@@ -77,6 +77,19 @@ export const authService = {
       method: 'POST',
       body: input,
       authenticated: false,
+    }),
+  forgotPassword: (email: string) =>
+    apiRequest<void>('/auth/forgot-password', { method: 'POST', body: { email }, authenticated: false }),
+  resetPassword: (token: string, password: string) =>
+    apiRequest<void>('/auth/reset-password', {
+      method: 'POST',
+      body: { token, password },
+      authenticated: false,
+    }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiRequest<SessionPayload>('/auth/change-password', {
+      method: 'POST',
+      body: { currentPassword, newPassword },
     }),
   logout: () => apiRequest<void>('/auth/logout', { method: 'POST', authenticated: false }),
   me: () => apiRequest<{ user: User }>('/auth/me'),
@@ -135,6 +148,6 @@ export const adminService = {
   disableTeacher: (id: string) => apiRequest<User>(`/admin/teachers/${id}/disable`, { method: 'PATCH' }),
   createInvite: async (expiresInDays: number) =>
     (await apiRequest<Invite>('/admin/invites', { method: 'POST', body: { expiresInDays } })).payload,
-  createAdmin: (body: { cedula: string; fullName: string; password: string }) =>
+  createAdmin: (body: { cedula: string; fullName: string; email: string; password: string }) =>
     apiRequest<User>('/admin/admins', { method: 'POST', body }),
 };

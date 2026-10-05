@@ -30,6 +30,12 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - `src/proxy.ts` redirige según la cookie ligera `apex_session` (solo el rol, no es un secreto; la autorización real vive en el API). Rutas inexistentes muestran `not-found`.
 - Sin conexión no se puede cerrar sesión ni cambiar el QR.
 
+## Cuenta y recuperación de contraseña
+- El correo institucional (`src/content/account.ts`, dominio `elpoli.edu.co`) es obligatorio en los registros; se valida en el formulario y en el API.
+- `/recuperar-contrasena` pide el correo y siempre muestra el mismo mensaje. `/restablecer-contrasena` lee el token del fragmento de la URL, lo borra de la barra de direcciones y pide la nueva contraseña.
+- `/cuenta` (todos los roles) muestra los datos y permite cambiar la contraseña; las demás sesiones se cierran y la actual continúa.
+- Estas pantallas requieren conexión.
+
 ## Seguridad
 - `src/proxy.ts` genera un nonce por petición y aplica una CSP estricta (`src/lib/security/content-security-policy.ts`): scripts solo con nonce y `strict-dynamic`, sin `unsafe-inline` ni `unsafe-eval` en producción, `connect-src` limitado al origen de la web y al del API (`NEXT_PUBLIC_API_URL`), sin frames ni plugins. Como el nonce exige render dinámico, `RootLayout` usa `connection()`.
 - Concesiones puntuales: `wasm-unsafe-eval` (decodificador QR) y `style-src-attr 'unsafe-inline'` (atributos `style` de React/next/image; no ejecutan código).

@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,7 @@ export function LoginForm() {
         onChange={(event) => setPassword(event.target.value)}
         required
       />
+      <Link href="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
       <Button type="submit" loading={submitting} fullWidthOnMobile>
         Ingresar
       </Button>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
 import { errorMessage } from '@/lib/format';
 import { homeFor } from '@/lib/routes';
+import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
 import { authService } from '@/lib/services';
 import { useAuth } from './auth-context';
 import { fieldErrors } from './use-form-errors';
@@ -26,6 +27,11 @@ export function RegisterTeacherForm() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const emailProblem = institutionalEmailError(form.email);
+    if (emailProblem) {
+      setErrors({ email: emailProblem });
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setErrors({});
@@ -34,7 +40,7 @@ export function RegisterTeacherForm() {
         cedula: form.cedula,
         fullName: form.fullName,
         password: form.password,
-        email: form.email || undefined,
+        email: form.email,
         inviteCode: form.inviteCode || undefined,
       });
       if (payload.accessToken) {
@@ -80,12 +86,14 @@ export function RegisterTeacherForm() {
         required
       />
       <TextField
-        label="Correo (opcional)"
+        label="Correo institucional"
         type="email"
         autoComplete="email"
+        hint={`${institutionalEmailHint} Lo usaremos si olvidas tu contraseña.`}
         value={form.email}
         onChange={update('email')}
         error={errors.email}
+        required
       />
       <TextField
         label="Contraseña"

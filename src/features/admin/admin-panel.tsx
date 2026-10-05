@@ -12,6 +12,7 @@ import { fieldErrors } from '@/features/auth/use-form-errors';
 import { useAuth } from '@/features/auth/auth-context';
 import { useQuery } from '@/hooks/use-query';
 import { errorMessage, formatCedula, formatDateTime } from '@/lib/format';
+import { institutionalEmailHint } from '@/content/account';
 import { adminService } from '@/lib/services';
 import { Invite, UserStatus } from '@/types/api';
 import styles from './admin-panel.module.scss';
@@ -30,7 +31,7 @@ export function AdminPanel() {
   const [invite, setInvite] = useState<Invite | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [adminForm, setAdminForm] = useState({ cedula: '', fullName: '', password: '' });
+  const [adminForm, setAdminForm] = useState({ cedula: '', fullName: '', email: '', password: '' });
   const [adminErrors, setAdminErrors] = useState<Record<string, string>>({});
   const [adminMessage, setAdminMessage] = useState<string | null>(null);
 
@@ -61,7 +62,7 @@ export function AdminPanel() {
     setAdminMessage(null);
     try {
       await adminService.createAdmin(adminForm);
-      setAdminForm({ cedula: '', fullName: '', password: '' });
+      setAdminForm({ cedula: '', fullName: '', email: '', password: '' });
       setAdminMessage('Administrador creado');
     } catch (caught) {
       setAdminErrors(fieldErrors(caught));
@@ -150,6 +151,15 @@ export function AdminPanel() {
                 value={adminForm.fullName}
                 onChange={updateAdmin('fullName')}
                 error={adminErrors.fullName}
+                required
+              />
+              <TextField
+                label="Correo institucional"
+                type="email"
+                hint={institutionalEmailHint}
+                value={adminForm.email}
+                onChange={updateAdmin('email')}
+                error={adminErrors.email}
                 required
               />
               <TextField

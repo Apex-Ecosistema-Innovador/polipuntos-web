@@ -1,0 +1,52 @@
+@use '@/styles/mixins' as *;
+
+.account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  max-width: 32rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  @include font-display;
+  font-size: 1.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.details {
+  display: grid;
+  gap: var(--space-4);
+
+  @include from($breakpoint-sm) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  dt {
+    @include label-mono;
+    color: var(--text-secondary);
+  }
+
+  dd {
+    margin: var(--space-1) 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.mono {
+  @include font-mono;
+}
+
+.profile {
+  padding: var(--space-6);
+}

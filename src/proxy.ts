@@ -9,6 +9,7 @@ const protectedAreas: { prefix: string; roles: Role[] }[] = [
   { prefix: '/estudiante', roles: ['student'] },
   { prefix: '/profesor', roles: ['teacher'] },
   { prefix: '/admin', roles: ['admin', 'super_admin'] },
+  { prefix: '/cuenta', roles: ['student', 'teacher', 'admin', 'super_admin'] },
 ];
 
 const guestOnly = ['/login', '/registro', '/registro-profesor'];

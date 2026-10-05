@@ -9,6 +9,7 @@ import { TextField } from '@/components/ui/text-field';
 import { useQuery } from '@/hooks/use-query';
 import { errorMessage } from '@/lib/format';
 import { homeFor } from '@/lib/routes';
+import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
 import { authService, offeringService } from '@/lib/services';
 import { OfferingPicker } from '../student/offering-picker';
 import { useAuth } from './auth-context';
@@ -35,6 +36,11 @@ export function RegisterStudentForm() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const emailProblem = institutionalEmailError(form.email);
+    if (emailProblem) {
+      setErrors({ email: emailProblem });
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setErrors({});
@@ -43,7 +49,7 @@ export function RegisterStudentForm() {
         cedula: form.cedula,
         fullName: form.fullName,
         password: form.password,
-        email: form.email || undefined,
+        email: form.email,
         offeringIds,
       });
       completeSession(payload.user, payload.accessToken!);
@@ -77,12 +83,14 @@ export function RegisterStudentForm() {
         required
       />
       <TextField
-        label="Correo (opcional)"
+        label="Correo institucional"
         type="email"
         autoComplete="email"
+        hint={`${institutionalEmailHint} Lo usaremos si olvidas tu contraseña.`}
         value={form.email}
         onChange={update('email')}
         error={errors.email}
+        required
       />
       <TextField
         label="Contraseña"

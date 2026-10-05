@@ -45,6 +45,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Badge tone="green">{roleLabels[user.role]}</Badge>
               </div>
             </div>
+            <Link href="/cuenta" className={styles.accountLink}>
+              Mi cuenta
+            </Link>
             <Button
               variant="ghost"
               onClick={handleSignOut}

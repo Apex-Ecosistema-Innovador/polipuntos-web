@@ -23,6 +23,18 @@ describe('proxy', () => {
     expect(proxy(request('/estudiante/qr', 'student')).headers.get('location')).toBeNull();
   });
 
+  it('requires a session for the account page but accepts every role', () => {
+    expect(location(proxy(request('/cuenta')))).toBe('/login?next=%2Fcuenta');
+    for (const role of ['student', 'teacher', 'admin', 'super_admin']) {
+      expect(proxy(request('/cuenta', role)).headers.get('location')).toBeNull();
+    }
+  });
+
+  it('keeps recovery pages reachable with or without a session', () => {
+    expect(proxy(request('/recuperar-contrasena')).headers.get('location')).toBeNull();
+    expect(proxy(request('/restablecer-contrasena', 'student')).headers.get('location')).toBeNull();
+  });
+
   it('lets both admin roles into the admin area', () => {
     expect(proxy(request('/admin', 'super_admin')).headers.get('location')).toBeNull();
     expect(proxy(request('/admin', 'admin')).headers.get('location')).toBeNull();
