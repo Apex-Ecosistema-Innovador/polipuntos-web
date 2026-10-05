@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { connection } from 'next/server';
 import { Chakra_Petch, Inter, JetBrains_Mono } from 'next/font/google';
 import { AuthProvider } from '@/features/auth/auth-context';
 import { ConnectivityProvider } from '@/features/offline/connectivity-context';
@@ -29,7 +30,9 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+  await connection();
+
   return (
     <html lang="es" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body>

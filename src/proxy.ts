@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { API_ORIGIN } from '@/lib/env';
 import { homeFor } from '@/lib/routes';
+import { buildContentSecurityPolicy } from '@/lib/security/content-security-policy';
 import { parseSessionRole, SESSION_COOKIE } from '@/lib/session-cookie';
 import { Role } from '@/types/api';
 
@@ -37,9 +39,8 @@ const redirect = (request: NextRequest, pathname: string, search = '') => {
   return NextResponse.redirect(url);
 };
 
-export function proxy(request: NextRequest) {
+const resolveRedirect = (request: NextRequest, role: Role | null): NextResponse | null => {
   const { pathname } = request.nextUrl;
-  const role = parseSessionRole(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (publicAliases[pathname]) return redirect(request, publicAliases[pathname]);
 
@@ -58,27 +59,31 @@ export function proxy(request: NextRequest) {
 
   if (role && guestOnly.includes(pathname)) return redirect(request, homeFor(role));
 
-  return NextResponse.next();
+  return null;
+};
+
+const withSecurityPolicy = (request: NextRequest) => {
+  const nonce = btoa(crypto.randomUUID());
+  const policy = buildContentSecurityPolicy({
+    nonce,
+    apiOrigin: API_ORIGIN,
+    development: process.env.NODE_ENV !== 'production',
+  });
+
+  const headers = new Headers(request.headers);
+  headers.set('x-nonce', nonce);
+  headers.set('Content-Security-Policy', policy);
+
+  const response = NextResponse.next({ request: { headers } });
+  response.headers.set('Content-Security-Policy', policy);
+  return response;
+};
+
+export function proxy(request: NextRequest) {
+  const role = parseSessionRole(request.cookies.get(SESSION_COOKIE)?.value);
+  return resolveRedirect(request, role) ?? withSecurityPolicy(request);
 }
 
 export const config = {
-  matcher: [
-    '/estudiante/:path*',
-    '/profesor/:path*',
-    '/admin/:path*',
-    '/login',
-    '/registro',
-    '/registro-profesor',
-    '/signin',
-    '/register',
-    '/dashboard',
-    '/inicio',
-    '/home',
-    '/panel',
-    '/qr',
-    '/mi-qr',
-    '/escanear',
-    '/scan',
-    '/pendientes',
-  ],
+  matcher: ['/((?!_next/static|_next/image|.*\\..*).*)'],
 };

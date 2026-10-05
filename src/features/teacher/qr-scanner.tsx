@@ -19,8 +19,11 @@ export function QrScanner({ onToken }: QrScannerProps) {
         constraints={{ facingMode: 'environment' }}
         onScan={(codes) => {
           const value = codes[0]?.rawValue;
-          if (value) onToken(value);
+          if (!value) return;
+          navigator.vibrate?.(80);
+          onToken(value);
         }}
+        sound={false}
         formats={['qr_code']}
         components={{ finder: true }}
       />

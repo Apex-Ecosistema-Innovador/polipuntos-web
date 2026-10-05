@@ -29,5 +29,12 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - `src/proxy.ts` redirige según la cookie ligera `apex_session` (solo el rol, no es un secreto; la autorización real vive en el API). Rutas inexistentes muestran `not-found`.
 - Sin conexión no se puede cerrar sesión ni cambiar el QR.
 
+## Seguridad
+- `src/proxy.ts` genera un nonce por petición y aplica una CSP estricta (`src/lib/security/content-security-policy.ts`): scripts solo con nonce y `strict-dynamic`, sin `unsafe-inline` ni `unsafe-eval` en producción, `connect-src` limitado al origen de la web y al del API (`NEXT_PUBLIC_API_URL`), sin frames ni plugins. Como el nonce exige render dinámico, `RootLayout` usa `connection()`.
+- Concesiones puntuales: `wasm-unsafe-eval` (decodificador QR) y `style-src-attr 'unsafe-inline'` (atributos `style` de React/next/image; no ejecutan código).
+- `next.config.ts` añade `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` (cámara solo propia), `COOP` y HSTS.
+- El access token vive solo en memoria; el refresh token es una cookie HttpOnly del API con rotación.
+- Si cambias el dominio del API, actualiza `NEXT_PUBLIC_API_URL`: la CSP lo toma de ahí.
+
 ## Assets de marca
 `public/brand/` contiene el símbolo y los logos usados en la interfaz; `public/icons/` y `src/app/icon.png`, `apple-icon.png`, `opengraph-image.png` se generaron a partir del símbolo.
