@@ -69,6 +69,7 @@ const withSecurityPolicy = (request: NextRequest) => {
     nonce,
     apiOrigin: API_ORIGIN,
     development: process.env.NODE_ENV !== 'production',
+    upgradeInsecure: process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') ?? false,
   });
 
   const headers = new Headers(request.headers);

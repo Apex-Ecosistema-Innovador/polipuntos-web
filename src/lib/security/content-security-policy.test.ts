@@ -35,14 +35,23 @@ describe('buildContentSecurityPolicy', () => {
     expect(directive(policy, 'style-src-attr')).toEqual(["'unsafe-inline'"]);
   });
 
-  it('upgrades insecure requests in production only', () => {
-    expect(policy).toContain('upgrade-insecure-requests');
+  it('upgrades insecure requests only when asked to, so plain http testing keeps working', () => {
+    expect(policy).not.toContain('upgrade-insecure-requests');
+    const secure = buildContentSecurityPolicy({
+      nonce: 'n',
+      apiOrigin: 'https://api.example.com',
+      upgradeInsecure: true,
+    });
+    expect(secure).toContain('upgrade-insecure-requests');
+  });
+
+  it('allows eval only in development', () => {
     const development = buildContentSecurityPolicy({
       nonce: 'n',
       apiOrigin: 'http://localhost:4000',
       development: true,
     });
-    expect(development).not.toContain('upgrade-insecure-requests');
     expect(directive(development, 'script-src')).toContain("'unsafe-eval'");
+    expect(directive(policy, 'script-src')).not.toContain("'unsafe-eval'");
   });
 });

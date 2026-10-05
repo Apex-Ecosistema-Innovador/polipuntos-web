@@ -2,9 +2,15 @@ interface PolicyOptions {
   nonce: string;
   apiOrigin: string;
   development?: boolean;
+  upgradeInsecure?: boolean;
 }
 
-export function buildContentSecurityPolicy({ nonce, apiOrigin, development = false }: PolicyOptions): string {
+export function buildContentSecurityPolicy({
+  nonce,
+  apiOrigin,
+  development = false,
+  upgradeInsecure = false,
+}: PolicyOptions): string {
   const scriptSources = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"];
   const styleSources = ["'self'", `'nonce-${nonce}'`];
 
@@ -32,7 +38,7 @@ export function buildContentSecurityPolicy({ nonce, apiOrigin, development = fal
   };
 
   const rendered = Object.entries(directives).map(([name, sources]) => `${name} ${sources.join(' ')}`);
-  if (!development) rendered.push('upgrade-insecure-requests');
+  if (upgradeInsecure) rendered.push('upgrade-insecure-requests');
 
   return rendered.join('; ');
 }

@@ -50,6 +50,17 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 ## Assets de marca
 `public/brand/` contiene el símbolo y los logos usados en la interfaz; `public/icons/` y `src/app/icon.png`, `apple-icon.png`, `opengraph-image.png` se generaron a partir del símbolo.
 
+## Probar desde otro dispositivo en la red local
+Reemplaza `192.168.x.x` por la IP de tu computador y abre `http://192.168.x.x:3000` (escribe `http://` completo: Safari intenta `https` por defecto).
+
+1. Web, en `.env.local`: `NEXT_PUBLIC_API_URL=http://192.168.x.x:4000/api/v1` y, solo para `pnpm dev`, `ALLOWED_DEV_ORIGINS=192.168.x.x` (Next bloquea los recursos de desarrollo de orígenes desconocidos).
+2. API, en `.env`: `CORS_ORIGINS=http://localhost:3000,http://192.168.x.x:3000`.
+3. Reinicia ambos servidores. Si usas `pnpm start`, vuelve a hacer `pnpm build`: `NEXT_PUBLIC_API_URL` se incrusta al compilar.
+
+La CSP solo añade `upgrade-insecure-requests` cuando `NEXT_PUBLIC_SITE_URL` empieza por `https://`. Si lo dejas en `http://…`, el navegador no fuerza HTTPS (con eso, sin estilos y "no se pudo establecer una conexión segura").
+
+Limitación: la cámara, el service worker y la instalación de la PWA exigen un contexto seguro (HTTPS o `localhost`). Por IP con `http` el escáner no abrirá la cámara; para probarlo en el celular usa un túnel HTTPS (por ejemplo `cloudflared tunnel --url http://localhost:3000`) o `next dev --experimental-https`.
+
 ## Calidad antes de cada commit
 Husky ejecuta `.husky/pre-commit`: `lint` (sin advertencias) y `build` (que incluye el chequeo de tipos). Si falla alguno, el commit se cancela. Los tests se corren con `pnpm test`.
 
