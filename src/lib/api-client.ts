@@ -58,12 +58,21 @@ const guardedFetch = async (input: string, init: RequestInit) => {
 
 let accessToken: string | null = null;
 let refreshing: Promise<string | null> | null = null;
+let sessionEpoch = 0;
+let signedOut = false;
 
 export const tokenStore = {
   set: (token: string | null) => {
     accessToken = token;
+    if (token) signedOut = false;
   },
   get: () => accessToken,
+  revoke: () => {
+    sessionEpoch += 1;
+    signedOut = true;
+    accessToken = null;
+    refreshing = null;
+  },
 };
 
 const buildUrl = (path: string, query?: RequestOptions['query']) => {
@@ -75,16 +84,19 @@ const buildUrl = (path: string, query?: RequestOptions['query']) => {
 };
 
 async function refreshAccessToken(): Promise<string | null> {
+  if (signedOut) return null;
   if (!refreshing) {
+    const epoch = sessionEpoch;
     refreshing = guardedFetch(buildUrl('/auth/refresh'), { method: 'POST', credentials: 'include' })
       .then(async (response) => {
         if (!response.ok) return null;
         const data = (await response.json()) as Envelope<{ accessToken: string }>;
+        if (epoch !== sessionEpoch) return null;
         accessToken = data.payload.accessToken;
         return accessToken;
       })
       .finally(() => {
-        refreshing = null;
+        if (epoch === sessionEpoch) refreshing = null;
       });
   }
   return refreshing;

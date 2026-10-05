@@ -14,15 +14,17 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ roles, children }: RoleGuardProps) {
-  const { user, status } = useAuth();
+  const { user, status, signedOutByUser } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const allowed = Boolean(user && roles.includes(user.role));
 
   useEffect(() => {
-    if (status === 'anonymous') window.location.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    if (status === 'anonymous') {
+      window.location.replace(signedOutByUser ? '/login' : `/login?next=${encodeURIComponent(pathname)}`);
+    }
     if (status === 'authenticated' && user && !allowed) router.replace(homeFor(user.role));
-  }, [status, user, allowed, router, pathname]);
+  }, [status, user, allowed, router, pathname, signedOutByUser]);
 
   if (!allowed) {
     return (

@@ -6,7 +6,7 @@ export type QueuedStatus = 'pending' | 'rejected';
 export interface QueuedAward {
   id: string;
   teacherId: string;
-  qrToken: string;
+  qrToken?: string;
   studentId: string;
   studentName: string | null;
   offeringId: string;
@@ -79,6 +79,7 @@ async function flush(teacherId: string): Promise<SyncOutcome> {
     const results = await polipointService.awardBatch(
       chunk.map((item) => ({
         qrToken: item.qrToken,
+        studentId: item.qrToken ? undefined : item.studentId,
         offeringId: item.offeringId,
         points: item.points,
         reason: item.reason,

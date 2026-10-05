@@ -7,6 +7,12 @@
   max-width: 32rem;
 }
 
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .scanner {
   display: flex;
   flex-direction: column;

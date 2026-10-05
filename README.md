@@ -25,6 +25,7 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 
 - **Estudiante**: el QR y el último total conocido se guardan en IndexedDB y se muestran sin conexión (el total aparece marcado como desactualizado).
 - **Profesor**: el dispositivo guarda un roster de sus estudiantes; sin conexión se escanea, se elige asignatura y se asignan puntos. Las asignaciones se encolan en IndexedDB (`src/lib/offline/award-queue.ts`) y se envían a `POST /polipoints/awards/batch` al recuperar la conexión. La firma del QR se valida en el servidor al sincronizar.
+- **Asignación manual**: si el QR falla, el profesor busca al estudiante por nombre o cédula en el roster guardado (también sin conexión), elige asignatura y puntos. Queda registrada con `source = manual`.
 - Dashboards, asignaturas, historial, registro e inicio de sesión requieren conexión y muestran una pantalla propia.
 - `src/proxy.ts` redirige según la cookie ligera `apex_session` (solo el rol, no es un secreto; la autorización real vive en el API). Rutas inexistentes muestran `not-found`.
 - Sin conexión no se puede cerrar sesión ni cambiar el QR.
@@ -33,6 +34,7 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - `src/proxy.ts` genera un nonce por petición y aplica una CSP estricta (`src/lib/security/content-security-policy.ts`): scripts solo con nonce y `strict-dynamic`, sin `unsafe-inline` ni `unsafe-eval` en producción, `connect-src` limitado al origen de la web y al del API (`NEXT_PUBLIC_API_URL`), sin frames ni plugins. Como el nonce exige render dinámico, `RootLayout` usa `connection()`.
 - Concesiones puntuales: `wasm-unsafe-eval` (decodificador QR) y `style-src-attr 'unsafe-inline'` (atributos `style` de React/next/image; no ejecutan código).
 - `next.config.ts` añade `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` (cámara solo propia), `COOP` y HSTS.
+- Al cerrar sesión el access token se borra de memoria de inmediato y no se vuelve a renovar; después se revoca la sesión en el API.
 - El access token vive solo en memoria; el refresh token es una cookie HttpOnly del API con rotación.
 - Si cambias el dominio del API, actualiza `NEXT_PUBLIC_API_URL`: la CSP lo toma de ahí.
 

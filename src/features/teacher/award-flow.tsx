@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,24 +12,28 @@ import { SelectField, TextField } from '@/components/ui/text-field';
 import { quickPoints, maxPointsPerAward } from '@/content/polipoints';
 import { NetworkError } from '@/lib/api-client';
 import { errorMessage, formatCedula } from '@/lib/format';
-import { Roster } from '@/lib/offline/cache';
+import { Roster, RosterStudent } from '@/lib/offline/cache';
 import { readQrSubject } from '@/lib/offline/qr-token';
 import { recentAwards } from '@/lib/offline/recent-awards';
 import { polipointService } from '@/lib/services';
 import { Offering } from '@/types/api';
 import { useConnectivity } from '../offline/connectivity-context';
 import { useSync } from '../offline/sync-context';
+import { ManualStudentSearch } from './manual-student-search';
 import styles from './award-flow.module.scss';
 
 const QrScanner = dynamic(() => import('./qr-scanner').then((module) => module.QrScanner), { ssr: false });
 
+type Mode = 'scan' | 'manual';
+
 interface ScannedStudent {
-  token: string;
+  token: string | null;
   id: string;
   fullName: string | null;
   cedula: string | null;
   offerings: Offering[];
   total: number | null;
+  totalIsLive: boolean;
   verified: boolean;
 }
 
@@ -36,7 +41,7 @@ const offeringLabel = (offering: Offering) => `${offering.courseCode} · ${offer
 
 function resolveOnDevice(token: string, roster: Roster | null): ScannedStudent | string {
   const studentId = readQrSubject(token);
-  if (!studentId) return 'El código QR no es válido';
+  if (!studentId) return 'El código QR no es válido. Puedes buscar al estudiante manualmente.';
   if (!roster) return 'Aún no hay datos guardados en este dispositivo. Conéctate una vez para descargarlos.';
 
   const known = roster.students.find((student) => student.id === studentId);
@@ -48,6 +53,7 @@ function resolveOnDevice(token: string, roster: Roster | null): ScannedStudent |
       cedula: known.cedula,
       offerings: roster.offerings.filter((offering) => known.offeringIds.includes(offering.id)),
       total: known.total,
+      totalIsLive: false,
       verified: true,
     };
   }
@@ -59,13 +65,16 @@ function resolveOnDevice(token: string, roster: Roster | null): ScannedStudent |
     cedula: null,
     offerings: roster.offerings,
     total: null,
+    totalIsLive: false,
     verified: false,
   };
 }
 
 export function AwardFlow() {
+  const searchParams = useSearchParams();
   const { online } = useConnectivity();
   const { roster, enqueue } = useSync();
+  const [mode, setMode] = useState<Mode>(searchParams.get('modo') === 'manual' ? 'manual' : 'scan');
   const [scan, setScan] = useState<ScannedStudent | null>(null);
   const [offeringId, setOfferingId] = useState('');
   const [points, setPoints] = useState('');
@@ -106,8 +115,28 @@ export function AwardFlow() {
       cedula: result.student.cedula,
       offerings: result.offerings,
       total: result.total,
+      totalIsLive: true,
       verified: true,
     });
+  };
+
+  const selectManually = (student: RosterStudent) => {
+    open({
+      token: null,
+      id: student.id,
+      fullName: student.fullName,
+      cedula: student.cedula,
+      offerings: roster?.offerings.filter((offering) => student.offeringIds.includes(offering.id)) ?? [],
+      total: student.total,
+      totalIsLive: false,
+      verified: true,
+    });
+  };
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setError(null);
+    setDone(null);
   };
 
   const handleToken = async (token: string) => {
@@ -135,7 +164,7 @@ export function AwardFlow() {
     const offering = student.offerings.find((entry) => entry.id === offeringId);
     await enqueue({
       id: idempotencyKey,
-      qrToken: student.token,
+      qrToken: student.token ?? undefined,
       studentId: student.id,
       studentName: student.fullName,
       offeringId,
@@ -171,6 +200,7 @@ export function AwardFlow() {
         points: amount,
         reason: reason || undefined,
         idempotencyKey,
+        source: scan.token ? 'qr' : 'manual',
       });
       setDone(`${amount} polipuntos asignados a ${scan.fullName ?? 'el estudiante'}`);
       recentAwards.record(scan.id, offeringId);
@@ -202,10 +232,34 @@ export function AwardFlow() {
       {error && <Alert tone="error">{error}</Alert>}
 
       {!scan && (
+        <div className={styles.modes} role="group" aria-label="Cómo identificar al estudiante">
+          <Button variant={mode === 'scan' ? 'primary' : 'secondary'} onClick={() => switchMode('scan')}>
+            Escanear QR
+          </Button>
+          <Button variant={mode === 'manual' ? 'primary' : 'secondary'} onClick={() => switchMode('manual')}>
+            Buscar estudiante
+          </Button>
+        </div>
+      )}
+
+      {!scan && mode === 'scan' && (
         <div className={styles.scanner}>
           <QrScanner onToken={handleToken} />
           <p className={styles.help}>Apunta la cámara al código QR del estudiante.</p>
+          {error && (
+            <Button variant="secondary" onClick={() => switchMode('manual')}>
+              Buscar estudiante manualmente
+            </Button>
+          )}
         </div>
+      )}
+
+      {!scan && mode === 'manual' && (
+        <ManualStudentSearch
+          roster={roster}
+          initialQuery={searchParams.get('q') ?? ''}
+          onSelect={selectManually}
+        />
       )}
 
       {scan && (
@@ -221,10 +275,12 @@ export function AwardFlow() {
               )}
               {scan.total !== null && (
                 <Badge tone="yellow">
-                  {scan.total} polipuntos {online ? 'en total' : '· último total conocido, desactualizado'}
+                  {scan.total} polipuntos {scan.totalIsLive ? 'en total' : '· último total conocido'}
+                  {!scan.totalIsLive && !online ? ', desactualizado' : ''}
                 </Badge>
               )}
               {!scan.verified && <Badge tone="danger">Sin verificar: se validará al sincronizar</Badge>}
+              {!scan.token && <Badge tone="purple">Asignación manual</Badge>}
             </div>
           </div>
 

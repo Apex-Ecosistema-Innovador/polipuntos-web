@@ -14,6 +14,7 @@ interface AuthContextValue {
   user: User | null;
   status: AuthStatus;
   verified: boolean;
+  signedOutByUser: boolean;
   signIn: (cedula: string, password: string) => Promise<User>;
   completeSession: (user: User, accessToken: string) => void;
   signOut: () => Promise<void>;
@@ -39,11 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
   const [verified, setVerified] = useState(false);
+  const [signedOutByUser, setSignedOutByUser] = useState(false);
 
   const establish = useCallback((nextUser: User) => {
     setUser(nextUser);
     setStatus('authenticated');
     setVerified(true);
+    setSignedOutByUser(false);
     sessionCookie.set(nextUser.role);
     void offlineCache.session.set(nextUser);
   }, []);
@@ -98,18 +101,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
-    await authService.logout().catch(() => undefined);
-    tokenStore.set(null);
+    tokenStore.revoke();
     sessionCookie.clear();
+    await authService.logout().catch(() => undefined);
     if (user) await offlineCache.clearUserData(user.id);
+    setSignedOutByUser(true);
     setUser(null);
     setStatus('anonymous');
     setVerified(false);
   }, [user]);
 
   const value = useMemo(
-    () => ({ user, status, verified, signIn, completeSession, signOut }),
-    [user, status, verified, signIn, completeSession, signOut],
+    () => ({ user, status, verified, signedOutByUser, signIn, completeSession, signOut }),
+    [user, status, verified, signedOutByUser, signIn, completeSession, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -44,7 +44,8 @@ export interface DashboardFilters {
 }
 
 export interface OfflineAwardPayload {
-  qrToken: string;
+  qrToken?: string;
+  studentId?: string;
   offeringId: string;
   points: number;
   reason?: string;
@@ -110,6 +111,7 @@ export const polipointService = {
     points: number;
     reason?: string;
     idempotencyKey: string;
+    source?: 'qr' | 'manual';
   }) => apiRequest<{ id: string }>('/polipoints/awards', { method: 'POST', body }),
   awardBatch: async (items: OfflineAwardPayload[]) =>
     (await apiRequest<BatchResult[]>('/polipoints/awards/batch', { method: 'POST', body: { items } }))

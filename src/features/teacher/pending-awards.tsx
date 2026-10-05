@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -61,9 +62,17 @@ export function PendingAwards() {
               {item.error && <p className={styles.error}>{item.error}</p>}
               <div className={styles.actions}>
                 {item.status === 'rejected' && (
-                  <Button variant="secondary" onClick={() => void retry(item.id)}>
-                    Reintentar
-                  </Button>
+                  <>
+                    <Button variant="secondary" onClick={() => void retry(item.id)}>
+                      Reintentar
+                    </Button>
+                    <Link
+                      className={styles.link}
+                      href={`/profesor/escanear?modo=manual&q=${encodeURIComponent(item.studentName ?? '')}`}
+                    >
+                      Asignar manualmente
+                    </Link>
+                  </>
                 )}
                 <Button variant="ghost" onClick={() => void discard(item.id)}>
                   Descartar
