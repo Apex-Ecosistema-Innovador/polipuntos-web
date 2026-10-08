@@ -7,7 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Initials } from '@/components/ui/initials';
+import { Pagination } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
+import { HISTORY_PAGE_SIZE } from '@/lib/pagination';
 import { useQuery } from '@/hooks/use-query';
 import { accentFor } from '@/lib/accent';
 import { cn } from '@/lib/cn';
@@ -17,7 +19,8 @@ import styles from './student-detail.module.scss';
 
 export function StudentDetail() {
   const { studentId } = useParams<{ studentId: string }>();
-  const detail = useQuery(() => dashboardService.detail(studentId), [studentId]);
+  const [page, setPage] = useState(1);
+  const detail = useQuery(() => dashboardService.detail(studentId, page), [studentId, page]);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,11 +38,11 @@ export function StudentDetail() {
     setBusyId(null);
   };
 
-  if (detail.loading) return <Spinner />;
+  if (detail.loading && !detail.data) return <Spinner />;
   if (detail.error || !detail.data)
     return <Alert tone="error">{detail.error ?? 'No se pudo cargar el estudiante'}</Alert>;
 
-  const { student, offerings, history } = detail.data;
+  const { student, offerings, history, historyTotal } = detail.data;
 
   return (
     <div className={styles.detail}>
@@ -105,6 +108,9 @@ export function StudentDetail() {
             </li>
           ))}
         </ul>
+        {historyTotal > HISTORY_PAGE_SIZE && (
+          <Pagination page={page} limit={HISTORY_PAGE_SIZE} total={historyTotal} onChange={setPage} />
+        )}
       </section>
     </div>
   );

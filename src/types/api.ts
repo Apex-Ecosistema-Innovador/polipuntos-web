@@ -45,6 +45,7 @@ export interface StudentSummary {
   total: number;
   offerings: OfferingTotal[];
   history: AwardHistoryItem[];
+  historyTotal: number;
 }
 
 export interface ScanResult {
@@ -68,6 +69,7 @@ export interface StudentDetail {
   student: User;
   offerings: OfferingTotal[];
   history: AwardHistoryItem[];
+  historyTotal: number;
 }
 
 export interface Invite {

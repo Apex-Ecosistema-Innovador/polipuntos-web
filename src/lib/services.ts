@@ -1,4 +1,5 @@
 import { apiDownload, apiRequest } from './api-client';
+import { EXPORT_LIMIT, fetchAllPages, HISTORY_PAGE_SIZE, mergeRosterPages } from './pagination';
 import {
   DashboardRow,
   Invite,
@@ -50,9 +51,16 @@ export const authService = {
 };
 
 export const offeringService = {
-  listPublic: async (q?: string) =>
-    (await apiRequest<Offering[]>('/offerings/public', { query: { q } })).payload,
-  listMine: async () => (await apiRequest<Offering[]>('/offerings/mine')).payload,
+  listPublic: (q?: string) =>
+    fetchAllPages(async (page, limit) => {
+      const response = await apiRequest<Offering[]>('/offerings/public', { query: { q, page, limit } });
+      return { items: response.payload, total: response.total ?? 0 };
+    }),
+  listMine: () =>
+    fetchAllPages(async (page, limit) => {
+      const response = await apiRequest<Offering[]>('/offerings/mine', { query: { page, limit } });
+      return { items: response.payload, total: response.total ?? 0 };
+    }),
   create: (body: { courseCode: string; courseName: string; term: string }) =>
     apiRequest<Offering>('/offerings', { method: 'POST', body }),
   update: (id: string, body: { courseName?: string; active?: boolean }) =>
@@ -60,13 +68,19 @@ export const offeringService = {
 };
 
 export const enrollmentService = {
-  listMine: async () => (await apiRequest<Offering[]>('/enrollments/mine')).payload,
+  listMine: () =>
+    fetchAllPages(async (page, limit) => {
+      const response = await apiRequest<Offering[]>('/enrollments/mine', { query: { page, limit } });
+      return { items: response.payload, total: response.total ?? 0 };
+    }),
   enroll: (offeringId: string) => apiRequest<void>('/enrollments', { method: 'POST', body: { offeringId } }),
   unenroll: (offeringId: string) => apiRequest<void>(`/enrollments/${offeringId}`, { method: 'DELETE' }),
 };
 
 export const polipointService = {
-  summary: async () => (await apiRequest<StudentSummary>('/polipoints/me')).payload,
+  summary: async (page = 1) =>
+    (await apiRequest<StudentSummary>('/polipoints/me', { query: { page, limit: HISTORY_PAGE_SIZE } }))
+      .payload,
   qr: async () => (await apiRequest<{ token: string }>('/polipoints/me/qr')).payload.token,
   rotateQr: async () =>
     (await apiRequest<{ token: string }>('/polipoints/me/qr/rotate', { method: 'POST' })).payload.token,
@@ -83,7 +97,15 @@ export const polipointService = {
   awardBatch: async (items: OfflineAwardPayload[]) =>
     (await apiRequest<BatchResult[]>('/polipoints/awards/batch', { method: 'POST', body: { items } }))
       .payload,
-  roster: async () => (await apiRequest<Roster>('/polipoints/roster')).payload,
+  roster: async () => {
+    const pages: Roster[] = [];
+    await fetchAllPages(async (page, limit) => {
+      const response = await apiRequest<Roster>('/polipoints/roster', { query: { page, limit } });
+      pages.push(response.payload);
+      return { items: response.payload.students, total: response.total ?? 0 };
+    });
+    return mergeRosterPages(pages);
+  },
   revoke: (id: string, reason?: string) =>
     apiRequest<void>(`/polipoints/awards/${id}/revoke`, { method: 'POST', body: { reason } }),
 };
@@ -91,13 +113,22 @@ export const polipointService = {
 export const dashboardService = {
   students: (filters: DashboardFilters) =>
     apiRequest<DashboardRow[]>('/teacher/students', { query: { ...filters } }),
-  exportCsv: (filters: DashboardFilters) => apiDownload('/teacher/students/export', { ...filters }),
-  detail: async (studentId: string) =>
-    (await apiRequest<StudentDetail>(`/teacher/students/${studentId}`)).payload,
+  exportCsv: (filters: DashboardFilters) =>
+    apiDownload('/teacher/students/export', { ...filters, page: undefined, limit: EXPORT_LIMIT }),
+  detail: async (studentId: string, page = 1) =>
+    (
+      await apiRequest<StudentDetail>(`/teacher/students/${studentId}`, {
+        query: { page, limit: HISTORY_PAGE_SIZE },
+      })
+    ).payload,
 };
 
 export const adminService = {
-  teachers: (status?: UserStatus) => apiRequest<User[]>('/admin/teachers', { query: { status, limit: 100 } }),
+  teachers: (status?: UserStatus) =>
+    fetchAllPages(async (page, limit) => {
+      const response = await apiRequest<User[]>('/admin/teachers', { query: { status, page, limit } });
+      return { items: response.payload, total: response.total ?? 0 };
+    }),
   approveTeacher: (id: string) => apiRequest<User>(`/admin/teachers/${id}/approve`, { method: 'PATCH' }),
   disableTeacher: (id: string) => apiRequest<User>(`/admin/teachers/${id}/disable`, { method: 'PATCH' }),
   createInvite: async (expiresInDays: number) =>

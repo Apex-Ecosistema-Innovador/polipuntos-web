@@ -36,7 +36,7 @@ const statusLabel: Record<UserStatus, string> = {
 
 export function AdminPanel() {
   const { user } = useAuth();
-  const teachers = useQuery(() => adminService.teachers().then((response) => response.payload), []);
+  const teachers = useQuery(() => adminService.teachers(), []);
   const [invite, setInvite] = useState<Invite | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);

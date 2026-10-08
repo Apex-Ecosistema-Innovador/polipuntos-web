@@ -8,6 +8,8 @@ import { Alert } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
 import { OfflineNotice } from '@/components/feedback/offline-notice';
 import { useAuth } from '@/features/auth/auth-context';
+import { useState } from 'react';
+import { Pagination } from '@/components/ui/pagination';
 import { useQuery } from '@/hooks/use-query';
 import { NetworkError } from '@/lib/api-client';
 import { offlineCache } from '@/lib/offline/cache';
@@ -16,6 +18,7 @@ import { accentFor } from '@/lib/accent';
 import { formatDateTime } from '@/lib/format';
 import { polipointService } from '@/lib/services';
 import { cn } from '@/lib/cn';
+import { HISTORY_PAGE_SIZE } from '@/lib/pagination';
 import styles from './points-overview.module.scss';
 import type { SummaryState } from '@/types/offline';
 
@@ -23,19 +26,20 @@ export function PointsOverview() {
   const { user } = useAuth();
   const { online } = useConnectivity();
   const userId = user?.id;
+  const [page, setPage] = useState(1);
 
   const { data, loading, error } = useQuery<SummaryState | null>(async () => {
     if (!userId) return null;
     try {
-      const summary = await polipointService.summary();
-      await offlineCache.summary.set(userId, summary);
+      const summary = await polipointService.summary(page);
+      if (page === 1) await offlineCache.summary.set(userId, summary);
       return { summary, savedAt: null };
     } catch (caught) {
       const cached = caught instanceof NetworkError ? await offlineCache.summary.get(userId) : null;
       if (!cached) throw caught;
       return { summary: cached.value, savedAt: cached.savedAt };
     }
-  }, [userId, online]);
+  }, [userId, online, page]);
 
   if (loading && !data) return <Spinner />;
   if (!data) {
@@ -124,6 +128,9 @@ export function PointsOverview() {
               </li>
             ))}
           </ul>
+        )}
+        {summary.historyTotal > HISTORY_PAGE_SIZE && (
+          <Pagination page={page} limit={HISTORY_PAGE_SIZE} total={summary.historyTotal} onChange={setPage} />
         )}
       </section>
     </div>
