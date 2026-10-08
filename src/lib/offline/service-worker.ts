@@ -3,7 +3,19 @@ const SW_URL = '/sw.js';
 const supported = () =>
   typeof window !== 'undefined' && 'serviceWorker' in navigator && process.env.NODE_ENV === 'production';
 
+async function clearServiceWorkers() {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map((registration) => registration.unregister()));
+  const names = await caches.keys();
+  await Promise.all(names.filter((name) => name.startsWith('apex-')).map((name) => caches.delete(name)));
+}
+
 export async function registerServiceWorker(onUpdateReady: (apply: () => void) => void) {
+  if (process.env.NODE_ENV !== 'production') {
+    await clearServiceWorkers();
+    return;
+  }
   if (!supported()) return;
 
   const registration = await navigator.serviceWorker.register(SW_URL, { scope: '/' });
