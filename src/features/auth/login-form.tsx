@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { PasswordField } from '@/components/ui/password-field';
 import { TextField } from '@/components/ui/text-field';
 import { errorMessage } from '@/lib/format';
 import { safeNext } from '@/lib/routes';
+import { sanitizeCedula } from '@/lib/validation';
 import { useAuth } from './auth-context';
 import styles from './auth-form.module.scss';
 
@@ -41,12 +43,11 @@ export function LoginForm() {
         inputMode="numeric"
         autoComplete="username"
         value={cedula}
-        onChange={(event) => setCedula(event.target.value)}
+        onChange={(event) => setCedula(sanitizeCedula(event.target.value))}
         required
       />
-      <TextField
+      <PasswordField
         label="Contraseña"
-        type="password"
         autoComplete="current-password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}

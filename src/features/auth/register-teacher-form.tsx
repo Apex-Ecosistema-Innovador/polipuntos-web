@@ -4,9 +4,19 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { PasswordField } from '@/components/ui/password-field';
 import { TextField } from '@/components/ui/text-field';
 import { errorMessage } from '@/lib/format';
 import { homeFor } from '@/lib/routes';
+import {
+  cedulaError,
+  firstError,
+  nameError,
+  passwordError,
+  sanitizeCedula,
+  sanitizeInviteCode,
+  sanitizeName,
+} from '@/lib/validation';
 import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
 import { authService } from '@/lib/services';
 import { useAuth } from './auth-context';
@@ -22,16 +32,21 @@ export function RegisterTeacherForm() {
   const [pending, setPending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const update = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((current) => ({ ...current, [key]: event.target.value }));
+  const update =
+    (key: keyof typeof form, clean: (value: string) => string = (value) => value) =>
+    (event: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((current) => ({ ...current, [key]: clean(event.target.value) }));
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const emailProblem = institutionalEmailError(form.email);
-    if (emailProblem) {
-      setErrors({ email: emailProblem });
-      return;
-    }
+    const problems = firstError({
+      cedula: cedulaError(form.cedula),
+      fullName: nameError(form.fullName),
+      email: institutionalEmailError(form.email),
+      password: passwordError(form.password),
+    });
+    setErrors(problems);
+    if (Object.keys(problems).length > 0) return;
     setSubmitting(true);
     setError(null);
     setErrors({});
@@ -66,14 +81,15 @@ export function RegisterTeacherForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {error && <Alert tone="error">{error}</Alert>}
       <TextField
         label="Cédula"
         mono
         inputMode="numeric"
+        autoComplete="off"
         value={form.cedula}
-        onChange={update('cedula')}
+        onChange={update('cedula', sanitizeCedula)}
         error={errors.cedula}
         required
       />
@@ -81,7 +97,7 @@ export function RegisterTeacherForm() {
         label="Nombre completo"
         autoComplete="name"
         value={form.fullName}
-        onChange={update('fullName')}
+        onChange={update('fullName', sanitizeName)}
         error={errors.fullName}
         required
       />
@@ -95,9 +111,8 @@ export function RegisterTeacherForm() {
         error={errors.email}
         required
       />
-      <TextField
+      <PasswordField
         label="Contraseña"
-        type="password"
         autoComplete="new-password"
         hint="Mínimo 8 caracteres."
         value={form.password}
@@ -108,9 +123,11 @@ export function RegisterTeacherForm() {
       <TextField
         label="Código de invitación (opcional)"
         mono
+        autoCapitalize="characters"
+        autoComplete="off"
         hint="Sin código, tu cuenta quedará pendiente de aprobación."
         value={form.inviteCode}
-        onChange={update('inviteCode')}
+        onChange={update('inviteCode', sanitizeInviteCode)}
         error={errors.inviteCode}
       />
       <Button type="submit" loading={submitting} fullWidthOnMobile>

@@ -1,0 +1,76 @@
+@use '@/styles/mixins' as *;
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  @include focus-ring;
+
+  &:disabled {
+    cursor: wait;
+  }
+}
+
+.track {
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+
+  @include motion-safe {
+    transition:
+      background-color 220ms var(--ease-default),
+      border-color 220ms var(--ease-default);
+  }
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: -0.5625rem;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  will-change: transform;
+
+  @include motion-safe {
+    transition:
+      transform 220ms var(--ease-default),
+      background-color 220ms var(--ease-default);
+  }
+}
+
+.state {
+  @include font-mono;
+  min-width: 4.5rem;
+  font-size: 0.75rem;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.on {
+  color: var(--brand-green-light);
+
+  .track {
+    background: rgba(150, 255, 39, 0.16);
+    border-color: var(--border-principal);
+  }
+
+  .thumb {
+    background: var(--brand-green-light);
+    transform: translateX(1.25rem);
+  }
+}

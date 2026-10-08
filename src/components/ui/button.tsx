@@ -31,7 +31,7 @@ export function Button({
       aria-busy={loading}
       {...rest}
     >
-      {loading ? 'Procesando…' : children}
+      {children}
     </button>
   );
 }

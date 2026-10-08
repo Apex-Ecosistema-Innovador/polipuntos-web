@@ -3,7 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { TextField } from '@/components/ui/text-field';
+import { PasswordField } from '@/components/ui/password-field';
 import { passwordMinLength } from '@/content/account';
 import { useAuth } from '@/features/auth/auth-context';
 import { fieldErrors } from '@/features/auth/use-form-errors';
@@ -59,18 +59,16 @@ export function ChangePasswordForm() {
         </Alert>
       )}
       {error && <Alert tone="error">{error}</Alert>}
-      <TextField
+      <PasswordField
         label="Contraseña actual"
-        type="password"
         autoComplete="current-password"
         value={form.currentPassword}
         onChange={update('currentPassword')}
         error={errors.currentPassword}
         required
       />
-      <TextField
+      <PasswordField
         label="Nueva contraseña"
-        type="password"
         autoComplete="new-password"
         hint={`Mínimo ${passwordMinLength} caracteres.`}
         value={form.newPassword}
@@ -78,9 +76,8 @@ export function ChangePasswordForm() {
         error={errors.newPassword}
         required
       />
-      <TextField
+      <PasswordField
         label="Confirma la nueva contraseña"
-        type="password"
         autoComplete="new-password"
         value={form.confirmation}
         onChange={update('confirmation')}

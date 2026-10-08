@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Alert } from '@/components/ui/alert';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { TextField } from '@/components/ui/text-field';
+import { PasswordField } from '@/components/ui/password-field';
 import { passwordMinLength } from '@/content/account';
 import { errorMessage } from '@/lib/format';
 import { authService } from '@/lib/services';
@@ -82,9 +82,8 @@ export function ResetPasswordForm() {
           {error} <Link href="/recuperar-contrasena">Solicitar un nuevo enlace</Link>
         </Alert>
       )}
-      <TextField
+      <PasswordField
         label="Nueva contraseña"
-        type="password"
         autoComplete="new-password"
         hint={`Mínimo ${passwordMinLength} caracteres.`}
         value={password}
@@ -92,9 +91,8 @@ export function ResetPasswordForm() {
         error={errors.password}
         required
       />
-      <TextField
+      <PasswordField
         label="Confirma la contraseña"
-        type="password"
         autoComplete="new-password"
         value={confirmation}
         onChange={(event) => setConfirmation(event.target.value)}

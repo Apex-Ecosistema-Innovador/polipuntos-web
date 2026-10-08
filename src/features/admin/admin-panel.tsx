@@ -7,14 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Spinner } from '@/components/ui/spinner';
+import { PasswordField } from '@/components/ui/password-field';
 import { TextField } from '@/components/ui/text-field';
 import { fieldErrors } from '@/features/auth/use-form-errors';
 import { useAuth } from '@/features/auth/auth-context';
 import { useQuery } from '@/hooks/use-query';
 import { errorMessage, formatCedula, formatDateTime } from '@/lib/format';
-import { institutionalEmailHint } from '@/content/account';
+import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
 import { adminService } from '@/lib/services';
 import { Invite, UserStatus } from '@/types/api';
+import {
+  cedulaError,
+  firstError,
+  nameError,
+  passwordError,
+  sanitizeCedula,
+  sanitizeName,
+} from '@/lib/validation';
 import styles from './admin-panel.module.scss';
 
 const statusTone = { active: 'green', pending_approval: 'yellow', disabled: 'danger' } as const;
@@ -58,8 +67,15 @@ export function AdminPanel() {
 
   const createAdmin = async (event: FormEvent) => {
     event.preventDefault();
-    setAdminErrors({});
     setAdminMessage(null);
+    const problems = firstError({
+      cedula: cedulaError(adminForm.cedula),
+      fullName: nameError(adminForm.fullName),
+      email: institutionalEmailError(adminForm.email),
+      password: passwordError(adminForm.password),
+    });
+    setAdminErrors(problems);
+    if (Object.keys(problems).length > 0) return;
     try {
       await adminService.createAdmin(adminForm);
       setAdminForm({ cedula: '', fullName: '', email: '', password: '' });
@@ -70,8 +86,10 @@ export function AdminPanel() {
     }
   };
 
-  const updateAdmin = (key: keyof typeof adminForm) => (event: React.ChangeEvent<HTMLInputElement>) =>
-    setAdminForm((current) => ({ ...current, [key]: event.target.value }));
+  const updateAdmin =
+    (key: keyof typeof adminForm, clean: (value: string) => string = (value) => value) =>
+    (event: React.ChangeEvent<HTMLInputElement>) =>
+      setAdminForm((current) => ({ ...current, [key]: clean(event.target.value) }));
 
   return (
     <div className={styles.layout}>
@@ -81,7 +99,7 @@ export function AdminPanel() {
         <h2 id="teachers" className={styles.title}>
           Profesores
         </h2>
-        {teachers.loading && <Spinner />}
+        {!teachers.data && teachers.loading && <Spinner />}
         {teachers.data && teachers.data.length === 0 && <EmptyState title="Sin profesores registrados" />}
         <ul className={styles.list}>
           {(teachers.data ?? []).map((teacher) => (
@@ -136,20 +154,23 @@ export function AdminPanel() {
             <h2 id="admins" className={styles.title}>
               Nuevo administrador
             </h2>
-            <form className={styles.form} onSubmit={createAdmin}>
+            <form className={styles.form} onSubmit={createAdmin} noValidate>
               {adminMessage && <Alert tone="success">{adminMessage}</Alert>}
               <TextField
                 label="Cédula"
                 mono
+                inputMode="numeric"
+                autoComplete="off"
                 value={adminForm.cedula}
-                onChange={updateAdmin('cedula')}
+                onChange={updateAdmin('cedula', sanitizeCedula)}
                 error={adminErrors.cedula}
                 required
               />
               <TextField
                 label="Nombre completo"
                 value={adminForm.fullName}
-                onChange={updateAdmin('fullName')}
+                autoComplete="off"
+                onChange={updateAdmin('fullName', sanitizeName)}
                 error={adminErrors.fullName}
                 required
               />
@@ -162,9 +183,8 @@ export function AdminPanel() {
                 error={adminErrors.email}
                 required
               />
-              <TextField
+              <PasswordField
                 label="Contraseña"
-                type="password"
                 autoComplete="new-password"
                 value={adminForm.password}
                 onChange={updateAdmin('password')}
