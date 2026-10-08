@@ -1,10 +1,4 @@
-interface PolicyOptions {
-  nonce: string;
-  apiOrigin: string;
-  development?: boolean;
-  upgradeInsecure?: boolean;
-}
-
+import type { PolicyOptions } from '@/types/security';
 export function buildContentSecurityPolicy({
   nonce,
   apiOrigin,

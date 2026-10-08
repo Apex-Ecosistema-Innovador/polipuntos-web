@@ -1,8 +1,4 @@
-interface QrClaims {
-  sub?: unknown;
-  typ?: unknown;
-}
-
+import type { QrClaims } from '@/types/security';
 export function readQrSubject(token: string): string | null {
   try {
     const payload = token.split('.')[1];

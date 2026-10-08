@@ -7,24 +7,11 @@ import { sessionCookie } from '@/lib/session-cookie';
 import { authService } from '@/lib/services';
 import { User } from '@/types/api';
 import { useConnectivity } from '../offline/connectivity-context';
-
-type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
-
-interface AuthContextValue {
-  user: User | null;
-  status: AuthStatus;
-  verified: boolean;
-  signedOutByUser: boolean;
-  signIn: (cedula: string, password: string) => Promise<User>;
-  completeSession: (user: User, accessToken: string) => void;
-  signOut: () => Promise<void>;
-}
-
-type Restored = { kind: 'verified'; user: User } | { kind: 'cached'; user: User } | { kind: 'anonymous' };
+import type { AuthContextValue, AuthStatus, RestoredSession } from '@/types/auth';
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function restore(): Promise<Restored> {
+async function restore(): Promise<RestoredSession> {
   try {
     if (!(await refreshSession())) return { kind: 'anonymous' };
     return { kind: 'verified', user: (await authService.me()).payload.user };
@@ -52,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const apply = useCallback(
-    (result: Restored) => {
+    (result: RestoredSession) => {
       if (result.kind === 'verified') {
         establish(result.user);
         return;

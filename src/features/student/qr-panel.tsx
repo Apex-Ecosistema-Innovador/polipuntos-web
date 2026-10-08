@@ -15,12 +15,7 @@ import { offlineCache } from '@/lib/offline/cache';
 import { polipointService } from '@/lib/services';
 import { useConnectivity } from '../offline/connectivity-context';
 import styles from './qr-panel.module.scss';
-
-interface Loaded {
-  image: string;
-  fromDevice: boolean;
-  savedAt: string | null;
-}
+import type { QrState } from '@/types/offline';
 
 const render = (token: string) =>
   QRCode.toDataURL(token, { errorCorrectionLevel: 'M', margin: 2, width: 480 });
@@ -29,7 +24,7 @@ export function QrPanel() {
   const { user } = useAuth();
   const { online } = useConnectivity();
   const userId = user?.id;
-  const [loaded, setLoaded] = useState<Loaded | null>(null);
+  const [loaded, setLoaded] = useState<QrState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsConnection, setNeedsConnection] = useState(false);
   const [rotating, setRotating] = useState(false);

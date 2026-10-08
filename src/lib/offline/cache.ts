@@ -1,24 +1,6 @@
 import { run, stores } from './db';
-import { Offering, StudentSummary, User } from '@/types/api';
-
-export interface Stamped<T> {
-  value: T;
-  savedAt: string;
-}
-
-export interface RosterStudent {
-  id: string;
-  fullName: string;
-  cedula: string;
-  offeringIds: string[];
-  total: number;
-}
-
-export interface Roster {
-  offerings: Offering[];
-  students: RosterStudent[];
-  generatedAt: string;
-}
+import { StudentSummary, User } from '@/types/api';
+import type { Roster, Stamped } from '@/types/offline';
 
 const keys = {
   session: 'session',

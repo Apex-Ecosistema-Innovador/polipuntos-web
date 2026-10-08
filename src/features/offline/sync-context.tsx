@@ -1,26 +1,13 @@
 'use client';
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { awardQueue, NewQueuedAward, QueuedAward, SyncOutcome } from '@/lib/offline/award-queue';
-import { offlineCache, Roster } from '@/lib/offline/cache';
+import { awardQueue } from '@/lib/offline/award-queue';
+import { offlineCache } from '@/lib/offline/cache';
 import { polipointService } from '@/lib/services';
 import { errorMessage } from '@/lib/format';
 import { useAuth } from '../auth/auth-context';
 import { useConnectivity } from './connectivity-context';
-
-interface SyncValue {
-  items: QueuedAward[];
-  pending: number;
-  rejected: number;
-  syncing: boolean;
-  lastOutcome: SyncOutcome | null;
-  lastError: string | null;
-  roster: Roster | null;
-  enqueue: (input: Omit<NewQueuedAward, 'teacherId'>) => Promise<QueuedAward>;
-  sync: () => Promise<void>;
-  discard: (id: string) => Promise<void>;
-  retry: (id: string) => Promise<void>;
-}
+import type { NewQueuedAward, QueuedAward, Roster, SyncOutcome, SyncValue } from '@/types/offline';
 
 const SyncContext = createContext<SyncValue | null>(null);
 

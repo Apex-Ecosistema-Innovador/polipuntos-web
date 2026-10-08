@@ -11,13 +11,7 @@ import {
   useState,
 } from 'react';
 import { healthUrl, networkEvents } from '@/lib/api-client';
-
-interface ConnectivityValue {
-  online: boolean;
-  known: boolean;
-  checking: boolean;
-  recheck: () => Promise<boolean>;
-}
+import type { ConnectivityValue } from '@/types/offline';
 
 const ConnectivityContext = createContext<ConnectivityValue | null>(null);
 

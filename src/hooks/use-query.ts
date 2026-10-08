@@ -2,12 +2,7 @@
 
 import { DependencyList, useCallback, useEffect, useRef, useState } from 'react';
 import { errorMessage } from '@/lib/format';
-
-interface QueryState<T> {
-  tag: string;
-  data: T | null;
-  error: string | null;
-}
+import type { QueryState } from '@/types/query';
 
 export function useQuery<T>(fetcher: () => Promise<T>, deps: DependencyList) {
   const fetcherRef = useRef(fetcher);

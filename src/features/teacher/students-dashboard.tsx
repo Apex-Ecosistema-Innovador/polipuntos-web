@@ -14,8 +14,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useQuery } from '@/hooks/use-query';
 import { errorMessage, formatCedula } from '@/lib/format';
-import { DashboardFilters, dashboardService, offeringService } from '@/lib/services';
+import { dashboardService, offeringService } from '@/lib/services';
 import styles from './students-dashboard.module.scss';
+import type { DashboardFilters } from '@/types/requests';
 
 const PAGE_SIZE = 20;
 

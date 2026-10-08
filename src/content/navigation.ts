@@ -1,9 +1,5 @@
 import { Role } from '@/types/api';
-
-export interface NavItem {
-  href: string;
-  label: string;
-}
+import type { NavItem } from '@/types/navigation';
 
 export const navigationByRole: Record<Role, NavItem[]> = {
   student: [

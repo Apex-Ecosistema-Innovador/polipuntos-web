@@ -13,7 +13,6 @@ import { TextField } from '@/components/ui/text-field';
 import { quickPoints, maxPointsPerAward } from '@/content/polipoints';
 import { NetworkError } from '@/lib/api-client';
 import { errorMessage, formatCedula } from '@/lib/format';
-import { Roster, RosterStudent } from '@/lib/offline/cache';
 import { readQrSubject } from '@/lib/offline/qr-token';
 import { recentAwards } from '@/lib/offline/recent-awards';
 import { polipointService } from '@/lib/services';
@@ -22,21 +21,9 @@ import { useConnectivity } from '../offline/connectivity-context';
 import { useSync } from '../offline/sync-context';
 import { ManualStudentSearch } from './manual-student-search';
 import styles from './award-flow.module.scss';
+import type { AwardMode, Roster, RosterStudent, ScannedStudent } from '@/types/offline';
 
 const QrScanner = dynamic(() => import('./qr-scanner').then((module) => module.QrScanner), { ssr: false });
-
-type Mode = 'scan' | 'manual';
-
-interface ScannedStudent {
-  token: string | null;
-  id: string;
-  fullName: string | null;
-  cedula: string | null;
-  offerings: Offering[];
-  total: number | null;
-  totalIsLive: boolean;
-  verified: boolean;
-}
 
 const offeringLabel = (offering: Offering) => `${offering.courseCode} · ${offering.courseName}`;
 
@@ -75,7 +62,7 @@ export function AwardFlow() {
   const searchParams = useSearchParams();
   const { online } = useConnectivity();
   const { roster, enqueue } = useSync();
-  const [mode, setMode] = useState<Mode>(searchParams.get('modo') === 'manual' ? 'manual' : 'scan');
+  const [mode, setMode] = useState<AwardMode>(searchParams.get('modo') === 'manual' ? 'manual' : 'scan');
   const [scan, setScan] = useState<ScannedStudent | null>(null);
   const [offeringId, setOfferingId] = useState('');
   const [points, setPoints] = useState('');
@@ -150,7 +137,7 @@ export function AwardFlow() {
     });
   };
 
-  const switchMode = (next: Mode) => {
+  const switchMode = (next: AwardMode) => {
     setMode(next);
     setError(null);
     setDone(null);

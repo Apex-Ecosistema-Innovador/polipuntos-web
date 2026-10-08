@@ -1,30 +1,6 @@
 import { run, stores } from './db';
 import { polipointService } from '@/lib/services';
-
-export type QueuedStatus = 'pending' | 'rejected';
-
-export interface QueuedAward {
-  id: string;
-  teacherId: string;
-  qrToken?: string;
-  studentId: string;
-  studentName: string | null;
-  offeringId: string;
-  offeringLabel: string;
-  points: number;
-  reason?: string;
-  occurredAt: string;
-  status: QueuedStatus;
-  error?: string;
-}
-
-export type NewQueuedAward = Omit<QueuedAward, 'status' | 'error' | 'occurredAt' | 'id'> &
-  Partial<Pick<QueuedAward, 'id' | 'occurredAt'>>;
-
-export interface SyncOutcome {
-  synced: number;
-  rejected: number;
-}
+import type { NewQueuedAward, QueuedAward, SyncOutcome } from '@/types/offline';
 
 const BATCH_SIZE = 50;
 

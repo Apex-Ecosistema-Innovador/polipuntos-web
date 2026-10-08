@@ -1,19 +1,5 @@
 import { apiUrl } from './env';
-
-interface Envelope<T> {
-  message?: string;
-  payload: T;
-  page?: number;
-  limit?: number;
-  total?: number;
-}
-
-interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
-  body?: unknown;
-  query?: Record<string, string | number | undefined>;
-  authenticated?: boolean;
-}
+import type { Envelope, NetworkListener, RequestOptions } from '@/types/requests';
 
 export class ApiError extends Error {
   constructor(
@@ -30,8 +16,6 @@ export class NetworkError extends ApiError {
     super(0, 'Sin conexión a internet');
   }
 }
-
-type NetworkListener = (reachable: boolean) => void;
 
 const networkListeners = new Set<NetworkListener>();
 

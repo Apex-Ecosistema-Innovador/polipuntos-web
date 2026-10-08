@@ -1,5 +1,4 @@
 import { apiDownload, apiRequest } from './api-client';
-import type { Roster } from './offline/cache';
 import {
   DashboardRow,
   Invite,
@@ -10,54 +9,9 @@ import {
   User,
   UserStatus,
 } from '@/types/api';
-
-interface SessionPayload {
-  user: User;
-  accessToken?: string;
-}
-
-export interface StudentRegistration {
-  cedula: string;
-  fullName: string;
-  password: string;
-  email: string;
-  offeringIds: string[];
-}
-
-export interface TeacherRegistration {
-  cedula: string;
-  fullName: string;
-  password: string;
-  email: string;
-  inviteCode?: string;
-}
-
-export interface DashboardFilters {
-  offeringId?: string;
-  q?: string;
-  minPoints?: number;
-  maxPoints?: number;
-  sort?: 'name' | 'cedula' | 'points';
-  order?: 'asc' | 'desc';
-  page?: number;
-  limit?: number;
-}
-
-export interface OfflineAwardPayload {
-  qrToken?: string;
-  studentId?: string;
-  offeringId: string;
-  points: number;
-  reason?: string;
-  idempotencyKey: string;
-  occurredAt: string;
-}
-
-export interface BatchResult {
-  idempotencyKey: string;
-  status: 'created' | 'duplicate' | 'rejected';
-  error?: string;
-}
+import type { SessionPayload, StudentRegistration, TeacherRegistration } from '@/types/auth';
+import type { Roster } from '@/types/offline';
+import type { BatchResult, DashboardFilters, OfflineAwardPayload } from '@/types/requests';
 
 export const authService = {
   login: (cedula: string, password: string) =>

@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Initials } from '@/components/ui/initials';
 import { TextField } from '@/components/ui/text-field';
 import { formatCedula } from '@/lib/format';
-import { Roster, RosterStudent } from '@/lib/offline/cache';
 import { matchesStudent } from '@/lib/search';
 import styles from './manual-student-search.module.scss';
+import type { Roster, RosterStudent } from '@/types/offline';
 
 const MAX_RESULTS = 8;
 

@@ -12,24 +12,19 @@ import { useQuery } from '@/hooks/use-query';
 import { NetworkError } from '@/lib/api-client';
 import { offlineCache } from '@/lib/offline/cache';
 import { useConnectivity } from '../offline/connectivity-context';
-import { StudentSummary } from '@/types/api';
 import { accentFor } from '@/lib/accent';
 import { formatDateTime } from '@/lib/format';
 import { polipointService } from '@/lib/services';
 import { cn } from '@/lib/cn';
 import styles from './points-overview.module.scss';
-
-interface Loaded {
-  summary: StudentSummary;
-  savedAt: string | null;
-}
+import type { SummaryState } from '@/types/offline';
 
 export function PointsOverview() {
   const { user } = useAuth();
   const { online } = useConnectivity();
   const userId = user?.id;
 
-  const { data, loading, error } = useQuery<Loaded | null>(async () => {
+  const { data, loading, error } = useQuery<SummaryState | null>(async () => {
     if (!userId) return null;
     try {
       const summary = await polipointService.summary();
