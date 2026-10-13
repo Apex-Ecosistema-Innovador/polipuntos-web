@@ -31,7 +31,13 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - Sin conexión no se puede cerrar sesión ni cambiar el QR.
 
 ## Selector de asignaturas
-`src/components/ui/combobox.tsx` es una lista desplegable con búsqueda (código, nombre o profesor, sin importar tildes), navegación por teclado y ARIA de combobox. Muestra como máximo 50 filas y avisa cuántas más coinciden, para que siga siendo usable con catálogos largos. Se usa en el registro (selección múltiple con chips), en "Agregar asignatura", en el filtro del dashboard y al asignar polipuntos.
+`src/components/ui/combobox.tsx` es una lista desplegable con búsqueda (código, nombre o profesor, sin importar tildes), navegación por teclado y ARIA de combobox. Muestra como máximo 50 filas y avisa cuántas más coinciden, para que siga siendo usable con catálogos largos. Se usa en "Agregar asignatura", en el filtro del dashboard y al asignar polipuntos.
+
+## Horario, ranking y reinicio semestral
+- Al registrarse el estudiante pasa a `/estudiante/horario`, donde sube el PDF de su horario del portal académico (máx. 2 MB). El API lo lee, comprueba que el documento sea el de la cuenta y que el periodo sea el vigente, y enlaza cada código de asignatura con la del periodo: si hay una sola se inscribe sola; si hay varios profesores elige el suyo; si aún no existe queda pendiente y se reintenta con «Buscar de nuevo». Solo se guardan códigos y nombres; el archivo no se almacena.
+- Cada semestre las asignaturas se reinician: `Mis polipuntos`, el escaneo y los listados solo muestran el periodo vigente (los puntos anteriores quedan en «Periodos anteriores») y un aviso pide cargar el horario del nuevo periodo.
+- `/estudiante/ranking` muestra, por asignatura, la posición del estudiante y la de sus compañeros (nombre y polipuntos, sin cédula).
+- Los polipuntos pueden ser negativos (cantidad distinta de cero); el formulario de asignar ofrece atajos de -10 y -5.
 
 ## Cuenta y recuperación de contraseña
 - El correo institucional (`src/content/account.ts`, dominio `elpoli.edu.co`) es obligatorio en los registros; se valida en el formulario y en el API.
@@ -46,6 +52,7 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - Al cerrar sesión el access token se borra de memoria de inmediato y no se vuelve a renovar; después se revoca la sesión en el API.
 - El access token vive solo en memoria; el refresh token es una cookie HttpOnly del API con rotación.
 - Si cambias el dominio del API, actualiza `NEXT_PUBLIC_API_URL`: la CSP lo toma de ahí.
+- `DISABLE_SECURITY_HEADERS=true` apaga la CSP y las cabeceras de seguridad (solo para depurar en local; por defecto está desactivado y no debe usarse en un despliegue).
 
 ## Assets de marca
 `public/brand/` contiene el símbolo y los logos usados en la interfaz; `public/icons/` y `src/app/icon.png`, `apple-icon.png`, `opengraph-image.png` se generaron a partir del símbolo.

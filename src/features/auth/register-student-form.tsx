@@ -4,12 +4,9 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import { PasswordField } from '@/components/ui/password-field';
 import { TextField } from '@/components/ui/text-field';
-import { useQuery } from '@/hooks/use-query';
 import { errorMessage } from '@/lib/format';
-import { homeFor } from '@/lib/routes';
 import {
   cedulaError,
   firstError,
@@ -19,8 +16,7 @@ import {
   sanitizeName,
 } from '@/lib/validation';
 import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
-import { authService, offeringService } from '@/lib/services';
-import { OfferingMultiSelect } from '../student/offering-select';
+import { authService } from '@/lib/services';
 import { useAuth } from './auth-context';
 import { fieldErrors } from './use-form-errors';
 import styles from './auth-form.module.scss';
@@ -28,9 +24,7 @@ import styles from './auth-form.module.scss';
 export function RegisterStudentForm() {
   const { completeSession } = useAuth();
   const router = useRouter();
-  const offerings = useQuery(() => offeringService.listPublic(), []);
   const [form, setForm] = useState({ cedula: '', fullName: '', email: '', password: '' });
-  const [offeringIds, setOfferingIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -59,10 +53,9 @@ export function RegisterStudentForm() {
         fullName: form.fullName,
         password: form.password,
         email: form.email,
-        offeringIds,
       });
       completeSession(payload.user, payload.accessToken!);
-      router.replace(homeFor(payload.user.role));
+      router.replace('/estudiante/horario');
     } catch (caught) {
       setErrors(fieldErrors(caught));
       setError(errorMessage(caught));
@@ -111,16 +104,6 @@ export function RegisterStudentForm() {
         error={errors.password}
         required
       />
-      <h2 className="visually-hidden">Asignaturas</h2>
-      {offerings.loading && <Spinner />}
-      {offerings.data && (
-        <OfferingMultiSelect
-          offerings={offerings.data}
-          selectedIds={offeringIds}
-          onChange={setOfferingIds}
-          hint="Puedes cursar varias asignaturas, incluso con el mismo profesor."
-        />
-      )}
       <Button type="submit" loading={submitting} fullWidthOnMobile>
         Crear cuenta
       </Button>

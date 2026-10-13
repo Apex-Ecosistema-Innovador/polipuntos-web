@@ -24,7 +24,7 @@ export default function LandingPage() {
             <ButtonLink href="/registro" variant="secondary" fullWidthOnMobile>
               Soy estudiante
             </ButtonLink>
-            <ButtonLink href="/registro-profesor" variant="ghost" fullWidthOnMobile>
+            <ButtonLink href="/registro-profesor" variant="purple" fullWidthOnMobile>
               Soy profesor
             </ButtonLink>
           </div>

@@ -4,6 +4,8 @@ import {
   DashboardRow,
   Invite,
   Offering,
+  RankingPage,
+  ScheduleOverview,
   ScanResult,
   StudentDetail,
   StudentSummary,
@@ -135,4 +137,23 @@ export const adminService = {
     (await apiRequest<Invite>('/admin/invites', { method: 'POST', body: { expiresInDays } })).payload,
   createAdmin: (body: { cedula: string; fullName: string; email: string; password: string }) =>
     apiRequest<User>('/admin/admins', { method: 'POST', body }),
+};
+
+export const scheduleService = {
+  current: async () => (await apiRequest<ScheduleOverview>('/schedule/current')).payload,
+  upload: async (file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return (await apiRequest<ScheduleOverview>('/schedule', { method: 'POST', form })).payload;
+  },
+  sync: async () => (await apiRequest<ScheduleOverview>('/schedule/sync', { method: 'POST' })).payload,
+};
+
+export const rankingService = {
+  page: async (offeringId: string, page: number, limit: number) => {
+    const response = await apiRequest<RankingPage>(`/offerings/${offeringId}/ranking`, {
+      query: { page, limit },
+    });
+    return { ...response.payload, total: response.total ?? 0 };
+  },
 };

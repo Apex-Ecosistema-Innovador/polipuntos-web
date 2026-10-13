@@ -68,6 +68,9 @@ export function PointsOverview() {
   }
 
   const { summary } = data;
+  const isCurrent = (term: string) => !summary.currentTerm || term === summary.currentTerm;
+  const currentOfferings = summary.offerings.filter((offering) => isCurrent(offering.term));
+  const pastOfferings = summary.offerings.filter((offering) => !isCurrent(offering.term));
 
   return (
     <div className={styles.overview}>
@@ -80,15 +83,15 @@ export function PointsOverview() {
         <h2 id="by-offering" className={styles.sectionTitle}>
           Por asignatura
         </h2>
-        {summary.offerings.length === 0 ? (
+        {currentOfferings.length === 0 ? (
           <EmptyState
-            title="Aún no cursas asignaturas"
-            description="Inscríbete para que tus profesores puedan asignarte polipuntos."
-            action={<ButtonLink href="/estudiante/asignaturas">Ver asignaturas</ButtonLink>}
+            title="Aún no cursas asignaturas este semestre"
+            description="Carga tu horario para enlazar tus asignaturas y que tus profesores puedan asignarte polipuntos."
+            action={<ButtonLink href="/estudiante/horario">Cargar horario</ButtonLink>}
           />
         ) : (
           <ul className={styles.grid}>
-            {summary.offerings.map((offering, index) => (
+            {currentOfferings.map((offering, index) => (
               <li key={offering.offeringId}>
                 <Card interactive className={cn(styles.offering, styles[accentFor(index)])}>
                   <Badge tone={accentFor(index)}>{offering.courseCode}</Badge>
@@ -101,6 +104,29 @@ export function PointsOverview() {
               </li>
             ))}
           </ul>
+        )}
+        {currentOfferings.length > 0 && (
+          <div>
+            <ButtonLink href="/estudiante/ranking" variant="secondary">
+              Ver ranking de mis asignaturas
+            </ButtonLink>
+          </div>
+        )}
+        {pastOfferings.length > 0 && (
+          <details className={styles.past}>
+            <summary>Periodos anteriores ({pastOfferings.length})</summary>
+            <ul className={styles.pastList}>
+              {pastOfferings.map((offering) => (
+                <li key={offering.offeringId} className={styles.pastItem}>
+                  <Badge>{offering.courseCode}</Badge>
+                  <span>
+                    {offering.courseName} · {offering.teacherName} · {offering.term}
+                  </span>
+                  <span className={styles.pastPoints}>{offering.points}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
         )}
       </section>
 

@@ -36,6 +36,7 @@ export interface Envelope<T> {
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
+  form?: FormData;
   query?: Record<string, string | number | undefined>;
   authenticated?: boolean;
 }

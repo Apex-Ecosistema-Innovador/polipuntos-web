@@ -43,6 +43,7 @@ export interface AwardHistoryItem {
 
 export interface StudentSummary {
   total: number;
+  currentTerm?: string;
   offerings: OfferingTotal[];
   history: AwardHistoryItem[];
   historyTotal: number;
@@ -82,4 +83,38 @@ export interface Paged<T> {
   total: number;
   page: number;
   limit: number;
+}
+
+export type ScheduleItemStatus = 'linked' | 'choose' | 'unavailable';
+
+export interface ScheduleOption {
+  offeringId: string;
+  teacher: { id: string; fullName: string };
+}
+
+export interface ScheduleItem {
+  courseCode: string;
+  courseName: string;
+  status: ScheduleItemStatus;
+  linkedOfferingId: string | null;
+  options: ScheduleOption[];
+}
+
+export interface ScheduleOverview {
+  term: string;
+  uploaded: boolean;
+  items: ScheduleItem[];
+}
+
+export interface RankingEntry {
+  studentId: string;
+  fullName: string;
+  points: number;
+  rank: number;
+  isMe: boolean;
+}
+
+export interface RankingPage {
+  me: RankingEntry | null;
+  entries: RankingEntry[];
 }

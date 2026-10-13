@@ -25,7 +25,7 @@ export interface StudentRegistration {
   fullName: string;
   password: string;
   email: string;
-  offeringIds: string[];
+  offeringIds?: string[];
 }
 
 export interface TeacherRegistration {

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/cn';
 import styles from './button.module.scss';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'purple';
 
 interface BaseProps {
   variant?: Variant;

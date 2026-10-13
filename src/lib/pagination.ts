@@ -3,6 +3,7 @@ import type { Roster } from '@/types/offline';
 export const PAGE_LIMIT = 100;
 export const MAX_PAGES = 50;
 export const HISTORY_PAGE_SIZE = 10;
+export const RANKING_PAGE_SIZE = 20;
 export const EXPORT_LIMIT = 5000;
 
 export async function fetchAllPages<T>(

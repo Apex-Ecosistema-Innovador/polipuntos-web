@@ -16,37 +16,6 @@ const baseProps = {
   emptyMessage: 'No hay asignaturas que coincidan.',
 };
 
-interface MultipleProps {
-  offerings: Offering[];
-  selectedIds: string[];
-  onChange: (ids: string[]) => void;
-  label?: string;
-  hint?: string;
-}
-
-export function OfferingMultiSelect({
-  offerings,
-  selectedIds,
-  onChange,
-  label = 'Asignaturas',
-  hint,
-}: MultipleProps) {
-  const options = useMemo(() => offerings.map(offeringToOption), [offerings]);
-
-  return (
-    <Combobox
-      {...baseProps}
-      multiple
-      label={label}
-      hint={hint}
-      placeholder="Buscar y elegir asignaturas"
-      options={options}
-      value={selectedIds}
-      onChange={onChange}
-    />
-  );
-}
-
 interface AddProps {
   offerings: Offering[];
   onAdd: (id: string) => void;

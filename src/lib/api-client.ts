@@ -88,14 +88,14 @@ async function refreshAccessToken(): Promise<string | null> {
 
 async function send(path: string, options: RequestOptions, token: string | null) {
   const headers: Record<string, string> = {};
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+  if (options.body !== undefined && !options.form) headers['Content-Type'] = 'application/json';
   if (token && options.authenticated !== false) headers.Authorization = `Bearer ${token}`;
 
   return guardedFetch(buildUrl(path, options.query), {
     method: options.method ?? 'GET',
     headers,
     credentials: 'include',
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
   });
 }
 

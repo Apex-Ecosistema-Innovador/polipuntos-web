@@ -5,6 +5,8 @@ export const navigationByRole: Record<Role, NavItem[]> = {
   student: [
     { href: '/estudiante', label: 'Mis polipuntos' },
     { href: '/estudiante/qr', label: 'Mi QR' },
+    { href: '/estudiante/ranking', label: 'Ranking' },
+    { href: '/estudiante/horario', label: 'Horario' },
     { href: '/estudiante/asignaturas', label: 'Asignaturas' },
   ],
   teacher: [

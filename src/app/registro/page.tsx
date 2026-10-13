@@ -7,7 +7,7 @@ export default function RegisterStudentPage() {
   return (
     <AuthLayout
       title="Crea tu cuenta"
-      description="Tu cédula es tu identidad. Elige las asignaturas que cursas; puedes agregar más después."
+      description="Tu cédula es tu identidad. Al terminar cargarás tu horario para enlazar tus asignaturas."
       footer={
         <span>
           ¿Ya tienes cuenta? <Link href="/login">Ingresa</Link>

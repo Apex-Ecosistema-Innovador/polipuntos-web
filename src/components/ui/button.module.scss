@@ -69,6 +69,18 @@
   }
 }
 
+.purple {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+
+  &:hover:not(:disabled) {
+    background: var(--brand-purple);
+    border-color: var(--brand-purple);
+    color: var(--text-primary);
+  }
+}
+
 .danger {
   background: transparent;
   border-color: rgba(255, 138, 122, 0.4);
