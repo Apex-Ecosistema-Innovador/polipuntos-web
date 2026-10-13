@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { apiOriginFor, isLocal } from '@/lib/env';
+import { apiOriginFor, isLocal, securityHeadersDisabled } from '@/lib/env';
 import { homeFor } from '@/lib/routes';
 import { buildContentSecurityPolicy } from '@/lib/security/content-security-policy';
 import { parseSessionRole, SESSION_COOKIE } from '@/lib/session-cookie';
@@ -92,7 +92,9 @@ const withSecurityPolicy = (request: NextRequest) => {
 
 export function proxy(request: NextRequest) {
   const role = parseSessionRole(request.cookies.get(SESSION_COOKIE)?.value);
-  return resolveRedirect(request, role) ?? withSecurityPolicy(request);
+  const redirection = resolveRedirect(request, role);
+  if (redirection) return redirection;
+  return securityHeadersDisabled ? NextResponse.next() : withSecurityPolicy(request);
 }
 
 export const config = {

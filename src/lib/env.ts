@@ -1,5 +1,7 @@
 export const isLocal = process.env.NODE_ENV !== 'production';
 
+export const securityHeadersDisabled = process.env.DISABLE_SECURITY_HEADERS === 'true';
+
 const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);

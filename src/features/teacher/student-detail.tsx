@@ -13,7 +13,7 @@ import { HISTORY_PAGE_SIZE } from '@/lib/pagination';
 import { useQuery } from '@/hooks/use-query';
 import { accentFor } from '@/lib/accent';
 import { cn } from '@/lib/cn';
-import { errorMessage, formatCedula, formatDateTime } from '@/lib/format';
+import { errorMessage, formatCedula, formatDateTime, formatPoints } from '@/lib/format';
 import { dashboardService, polipointService } from '@/lib/services';
 import styles from './student-detail.module.scss';
 
@@ -81,7 +81,7 @@ export function StudentDetail() {
         <ul className={styles.history}>
           {history.map((item) => (
             <li key={item.id} className={cn(styles.entry, item.revokedAt && styles.revoked)}>
-              <span className={styles.entryPoints}>+{item.points}</span>
+              <span className={styles.entryPoints}>{formatPoints(item.points)}</span>
               <div className={styles.entryText}>
                 <span>{item.courseName}</span>
                 <span className={styles.muted}>

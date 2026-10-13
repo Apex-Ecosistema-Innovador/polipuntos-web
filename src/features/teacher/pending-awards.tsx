@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatPoints } from '@/lib/format';
 import { useConnectivity } from '../offline/connectivity-context';
 import { useSync } from '../offline/sync-context';
 import styles from './pending-awards.module.scss';
@@ -45,7 +45,7 @@ export function PendingAwards() {
           <li key={item.id}>
             <Card className={styles.item}>
               <div className={styles.row}>
-                <span className={styles.points}>+{item.points}</span>
+                <span className={styles.points}>{formatPoints(item.points)}</span>
                 <div className={styles.text}>
                   <span>
                     {item.studentName ?? `Estudiante sin verificar (${item.studentId.slice(0, 8)})`}

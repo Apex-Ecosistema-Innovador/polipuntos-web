@@ -15,7 +15,7 @@ import { NetworkError } from '@/lib/api-client';
 import { offlineCache } from '@/lib/offline/cache';
 import { useConnectivity } from '../offline/connectivity-context';
 import { accentFor } from '@/lib/accent';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatPoints } from '@/lib/format';
 import { polipointService } from '@/lib/services';
 import { cn } from '@/lib/cn';
 import { HISTORY_PAGE_SIZE } from '@/lib/pagination';
@@ -114,7 +114,7 @@ export function PointsOverview() {
           <ul className={styles.history}>
             {summary.history.map((item) => (
               <li key={item.id} className={cn(styles.entry, item.revokedAt && styles.revoked)}>
-                <span className={styles.entryPoints}>+{item.points}</span>
+                <span className={styles.entryPoints}>{formatPoints(item.points)}</span>
                 <div className={styles.entryText}>
                   <span>
                     {item.courseName} · {item.teacherName}

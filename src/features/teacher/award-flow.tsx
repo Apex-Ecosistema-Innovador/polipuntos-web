@@ -189,8 +189,8 @@ export function AwardFlow() {
       return;
     }
     const amount = Number(points);
-    if (!Number.isInteger(amount) || amount < 1 || amount > maxPointsPerAward) {
-      setError(`Ingresa una cantidad entre 1 y ${maxPointsPerAward}`);
+    if (!Number.isInteger(amount) || amount === 0 || Math.abs(amount) > maxPointsPerAward) {
+      setError(`Ingresa una cantidad distinta de cero entre -${maxPointsPerAward} y ${maxPointsPerAward}`);
       return;
     }
     if (!duplicateWarning && recentAwards.isRecent(scan.id, offeringId)) {
@@ -336,8 +336,7 @@ export function AwardFlow() {
                 label="Polipuntos"
                 mono
                 type="number"
-                inputMode="numeric"
-                min={1}
+                min={-maxPointsPerAward}
                 max={maxPointsPerAward}
                 value={points}
                 onChange={(event) => setPoints(event.target.value)}

@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const isProductionBuild = process.env.NODE_ENV === 'production';
 const isLocal = !isProductionBuild;
+const securityHeadersDisabled = process.env.DISABLE_SECURITY_HEADERS === 'true';
 
 const baseHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -29,7 +30,9 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: isLocal ? [...localNetworkOrigins, ...extraDevOrigins] : extraDevOrigins,
   async headers() {
     return [
-      { source: '/(.*)', headers: isLocal ? baseHeaders : [...baseHeaders, ...hardenedHeaders] },
+      ...(securityHeadersDisabled
+        ? []
+        : [{ source: '/(.*)', headers: isLocal ? baseHeaders : [...baseHeaders, ...hardenedHeaders] }]),
       {
         source: '/sw.js',
         headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }],
