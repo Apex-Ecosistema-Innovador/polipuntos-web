@@ -1,4 +1,4 @@
-import { apiUrl } from './env';
+import { apiUrl, healthUrl } from './env';
 import type { Envelope, NetworkListener, RequestOptions } from '@/types/requests';
 
 export class ApiError extends Error {
@@ -60,7 +60,7 @@ export const tokenStore = {
 };
 
 const buildUrl = (path: string, query?: RequestOptions['query']) => {
-  const url = new URL(`${apiUrl()}${path}`);
+  const url = new URL(`${apiUrl()}${path}`, window.location.origin);
   Object.entries(query ?? {}).forEach(([key, value]) => {
     if (value !== undefined && value !== '') url.searchParams.set(key, String(value));
   });
@@ -127,4 +127,4 @@ export async function apiDownload(path: string, query?: RequestOptions['query'])
 
 export const refreshSession = refreshAccessToken;
 
-export const healthUrl = () => new URL('/health', apiUrl()).toString();
+export { healthUrl };

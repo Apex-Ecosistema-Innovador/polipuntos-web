@@ -52,6 +52,7 @@ La app es instalable y el service worker (`public/sw.js`) solo se registra en pr
 - Al cerrar sesión el access token se borra de memoria de inmediato y no se vuelve a renovar; después se revoca la sesión en el API.
 - El access token vive solo en memoria; el refresh token es una cookie HttpOnly del API con rotación.
 - Si cambias el dominio del API, actualiza `NEXT_PUBLIC_API_URL`: la CSP lo toma de ahí.
+- **Mismo origen (recomendado en producción):** con `NEXT_PUBLIC_API_URL=/api/v1` y `API_PROXY_TARGET=https://<api>`, `next.config.ts` reenvía `/api/v1/*` y `/api-health` al API. El navegador solo habla con el dominio de la web, así que la cookie de refresco es de primera parte y Safari/iPhone no la bloquea (con web y API en dominios distintos de `vercel.app` la sesión se perdería al recargar). La CSP queda con `connect-src 'self'` y el API puede usar `COOKIE_SAME_SITE=lax`. `API_PROXY_TARGET` solo se lee en el servidor.
 - `DISABLE_SECURITY_HEADERS=true` apaga la CSP y las cabeceras de seguridad (solo para depurar en local; por defecto está desactivado y no debe usarse en un despliegue).
 
 ## Assets de marca

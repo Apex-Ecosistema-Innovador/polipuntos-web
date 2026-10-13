@@ -1,6 +1,6 @@
 export interface PolicyOptions {
   nonce: string;
-  apiOrigin: string;
+  apiOrigin?: string | null;
   development?: boolean;
   upgradeInsecure?: boolean;
 }

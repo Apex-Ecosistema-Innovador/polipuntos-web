@@ -17,7 +17,7 @@ export function buildContentSecurityPolicy({
     'style-src-attr': ["'unsafe-inline'"],
     'img-src': ["'self'", 'data:', 'blob:'],
     'font-src': ["'self'"],
-    'connect-src': ["'self'", apiOrigin],
+    'connect-src': apiOrigin ? ["'self'", apiOrigin] : ["'self'"],
     'media-src': ["'self'", 'blob:'],
     'worker-src': ["'self'"],
     'manifest-src': ["'self'"],

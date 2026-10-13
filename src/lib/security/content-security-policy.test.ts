@@ -19,6 +19,11 @@ describe('buildContentSecurityPolicy', () => {
     expect(scripts).not.toContain("'unsafe-eval'");
   });
 
+  it('limits connections to the page origin when the api is proxied through it', () => {
+    const proxied = buildContentSecurityPolicy({ nonce: 'abc123', apiOrigin: null });
+    expect(directive(proxied, 'connect-src')).toEqual(["'self'"]);
+  });
+
   it('limits network access to the app and the api origin', () => {
     expect(directive(policy, 'connect-src')).toEqual(["'self'", 'https://api.example.com']);
   });

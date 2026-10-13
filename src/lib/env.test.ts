@@ -20,6 +20,11 @@ describe('resolveApiUrl', () => {
     expect(resolveApiUrl('192.168.10.14', { configured, local: false })).toBe(configured);
   });
 
+  it('keeps a same origin path untouched in every mode', () => {
+    expect(resolveApiUrl('192.168.10.14', { configured: '/api/v1', local: true })).toBe('/api/v1');
+    expect(resolveApiUrl('app.example.com', { configured: '/api/v1', local: false })).toBe('/api/v1');
+  });
+
   it('keeps an explicit non loopback api url', () => {
     const remote = 'https://api.example.com/api/v1';
     expect(resolveApiUrl('192.168.10.14', { configured: remote, local: true })).toBe(remote);

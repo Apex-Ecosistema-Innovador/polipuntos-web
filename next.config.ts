@@ -18,6 +18,8 @@ const hardenedHeaders = [
     : []),
 ];
 
+const apiProxyTarget = process.env.API_PROXY_TARGET?.replace(/\/+$/, '');
+
 const localNetworkOrigins = ['192.168.*.*', '10.*.*.*', '172.*.*.*', '*.local'];
 
 const extraDevOrigins = (process.env.ALLOWED_DEV_ORIGINS ?? '')
@@ -28,6 +30,13 @@ const extraDevOrigins = (process.env.ALLOWED_DEV_ORIGINS ?? '')
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   allowedDevOrigins: isLocal ? [...localNetworkOrigins, ...extraDevOrigins] : extraDevOrigins,
+  async rewrites() {
+    if (!apiProxyTarget) return [];
+    return [
+      { source: '/api/v1/:path*', destination: `${apiProxyTarget}/api/v1/:path*` },
+      { source: '/api-health', destination: `${apiProxyTarget}/health` },
+    ];
+  },
   async headers() {
     return [
       ...(securityHeadersDisabled
