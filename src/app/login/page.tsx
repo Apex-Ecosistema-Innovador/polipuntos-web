@@ -1,6 +1,7 @@
 import { RequiresConnection } from '@/components/feedback/requires-connection';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/layout/auth-layout';
+import { GuestRedirect } from '@/features/auth/guest-redirect';
 import { LoginForm } from '@/features/auth/login-form';
 
 export default function LoginPage() {
@@ -20,6 +21,7 @@ export default function LoginPage() {
       }
     >
       <RequiresConnection feature="Iniciar sesión">
+        <GuestRedirect />
         <LoginForm />
       </RequiresConnection>
     </AuthLayout>

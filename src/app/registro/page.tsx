@@ -1,6 +1,7 @@
 import { RequiresConnection } from '@/components/feedback/requires-connection';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/layout/auth-layout';
+import { GuestRedirect } from '@/features/auth/guest-redirect';
 import { RegisterStudentForm } from '@/features/auth/register-student-form';
 
 export default function RegisterStudentPage() {
@@ -15,6 +16,7 @@ export default function RegisterStudentPage() {
       }
     >
       <RequiresConnection feature="El registro">
+        <GuestRedirect />
         <RegisterStudentForm />
       </RequiresConnection>
     </AuthLayout>
