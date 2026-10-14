@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
-import { institutionalEmailError, institutionalEmailHint } from '@/content/account';
+import { institutionalEmailError, institutionalEmailHint, mailSenderAddress } from '@/content/account';
 import { errorMessage } from '@/lib/format';
 import { authService } from '@/lib/services';
 import styles from './auth-form.module.scss';
@@ -38,8 +38,9 @@ export function ForgotPasswordForm() {
     return (
       <div className={styles.form}>
         <Alert tone="success">
-          Si el correo está registrado, te enviamos un enlace para crear una nueva contraseña. Revisa tu
-          bandeja de entrada y la carpeta de spam. El enlace vence en 60 minutos.
+          Si el correo está registrado, te enviamos un enlace para crear una nueva contraseña desde{' '}
+          {mailSenderAddress}. Si no lo ves en tu bandeja de entrada, busca en la carpeta de spam o correo no
+          deseado. El enlace vence en 60 minutos.
         </Alert>
         <Link href="/login">Volver a ingresar</Link>
       </div>

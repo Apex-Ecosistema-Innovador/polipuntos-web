@@ -12,3 +12,5 @@ export function institutionalEmailError(email: string): string | undefined {
   if (domain !== institutionalEmailDomain) return institutionalEmailHint;
   return undefined;
 }
+
+export const mailSenderAddress = 'apex.ecosistema.noreply@gmail.com';
