@@ -16,7 +16,10 @@ export const navigationByRole: Record<Role, NavItem[]> = {
     { href: '/profesor/asignaturas', label: 'Asignaturas' },
   ],
   admin: [{ href: '/admin', label: 'Administración' }],
-  super_admin: [{ href: '/admin', label: 'Administración' }],
+  super_admin: [
+    { href: '/admin', label: 'Administración' },
+    { href: '/admin/hackathon', label: 'Hackathon' },
+  ],
 };
 
 export const roleLabels: Record<Role, string> = {

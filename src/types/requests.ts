@@ -42,3 +42,11 @@ export interface RequestOptions {
 }
 
 export type NetworkListener = (reachable: boolean) => void;
+
+export interface RegistrationFilters {
+  q?: string;
+  estado?: string;
+  verificado?: string;
+  page: number;
+  limit: number;
+}

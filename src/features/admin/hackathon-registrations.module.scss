@@ -1,0 +1,131 @@
+@use '@/styles/mixins' as *;
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+
+  @include from($breakpoint-md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include from($breakpoint-lg) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+  }
+}
+
+.statValue {
+  @include font-mono;
+  font-size: 1.5rem;
+  color: var(--brand-yellow);
+}
+
+.filters {
+  display: grid;
+  gap: var(--space-4);
+
+  @include from($breakpoint-md) {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  @include from($breakpoint-md) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.meta {
+  @include font-mono;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.more summary {
+  cursor: pointer;
+  color: var(--text-accent);
+  font-size: 0.875rem;
+}
+
+.details {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+
+  @include from($breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+
+  dt {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+  }
+
+  dd {
+    margin: 0;
+  }
+}

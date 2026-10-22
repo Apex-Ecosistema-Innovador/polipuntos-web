@@ -118,3 +118,32 @@ export interface RankingPage {
   me: RankingEntry | null;
   entries: RankingEntry[];
 }
+
+export type RegistrationStatus = 'PENDIENTE' | 'APROBADA' | 'RECHAZADA' | 'EN_LISTA_ESPERA';
+
+export interface HackathonRegistration {
+  id: string;
+  estado: RegistrationStatus;
+  creadoEn: string;
+  nombre: string;
+  correo: string;
+  correoVerificadoEn: string | null;
+  github: string | null;
+  linkedin: string | null;
+  portafolio: string | null;
+  institucion: string;
+  programa: string;
+  semestre: number;
+  tecnologias: string[];
+  nivelExperiencia: string | null;
+  consientePublicacionImagen: boolean;
+  reglamentoVersion: string;
+  datosVersion: string;
+  aceptadoEn: string;
+}
+
+export interface HackathonSummary {
+  total: number;
+  verificadas: number;
+  porEstado: Record<RegistrationStatus, number>;
+}

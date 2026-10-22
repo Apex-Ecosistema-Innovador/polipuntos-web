@@ -2,6 +2,8 @@ import { apiDownload, apiRequest } from './api-client';
 import { EXPORT_LIMIT, fetchAllPages, HISTORY_PAGE_SIZE, mergeRosterPages } from './pagination';
 import {
   DashboardRow,
+  HackathonRegistration,
+  HackathonSummary,
   Invite,
   Offering,
   RankingPage,
@@ -14,13 +16,13 @@ import {
 } from '@/types/api';
 import type { SessionPayload, StudentRegistration, TeacherRegistration } from '@/types/auth';
 import type { Roster } from '@/types/offline';
-import type { BatchResult, DashboardFilters, OfflineAwardPayload } from '@/types/requests';
+import type { BatchResult, DashboardFilters, OfflineAwardPayload, RegistrationFilters } from '@/types/requests';
 
 export const authService = {
-  login: (cedula: string, password: string) =>
+  login: (identifier: string, password: string) =>
     apiRequest<SessionPayload>('/auth/login', {
       method: 'POST',
-      body: { cedula, password },
+      body: { identifier, password },
       authenticated: false,
     }),
   registerStudent: (input: StudentRegistration) =>
@@ -137,6 +139,16 @@ export const adminService = {
     (await apiRequest<Invite>('/admin/invites', { method: 'POST', body: { expiresInDays } })).payload,
   createAdmin: (body: { cedula: string; fullName: string; email: string; password: string }) =>
     apiRequest<User>('/admin/admins', { method: 'POST', body }),
+};
+
+export const hackathonAdminService = {
+  summary: async () => (await apiRequest<HackathonSummary>('/admin/hackathon/inscripciones/resumen')).payload,
+  registrations: async (filters: RegistrationFilters) => {
+    const response = await apiRequest<HackathonRegistration[]>('/admin/hackathon/inscripciones', {
+      query: { ...filters },
+    });
+    return { items: response.payload, total: response.total ?? 0 };
+  },
 };
 
 export const scheduleService = {

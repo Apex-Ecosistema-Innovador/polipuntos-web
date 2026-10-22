@@ -7,7 +7,7 @@ export interface AuthContextValue {
   status: AuthStatus;
   verified: boolean;
   signedOutByUser: boolean;
-  signIn: (cedula: string, password: string) => Promise<User>;
+  signIn: (identifier: string, password: string) => Promise<User>;
   completeSession: (user: User, accessToken: string) => void;
   signOut: () => Promise<void>;
 }
